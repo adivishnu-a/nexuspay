@@ -63,8 +63,8 @@ public class GlobalExceptionHandler {
 
     private HttpStatus mapCodeToStatus(String code) {
         return switch (code) {
-            case "UNAUTHENTICATED", "INVALID_PIN", "TOKEN_EXPIRED" -> HttpStatus.UNAUTHORIZED;
-            case "UNAUTHORIZED" -> HttpStatus.FORBIDDEN;
+            case "UNAUTHENTICATED", "TOKEN_EXPIRED" -> HttpStatus.UNAUTHORIZED;
+            case "UNAUTHORIZED", "INVALID_PIN" -> HttpStatus.FORBIDDEN;
             case "NOT_FOUND", "NO_ACCOUNT", "RECIPIENT_NOT_FOUND" -> HttpStatus.NOT_FOUND;
             case "ACCOUNT_ALREADY_EXISTS", "IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD" -> HttpStatus.CONFLICT;
             case "INSUFFICIENT_FUNDS", "CANNOT_PAY_SELF", "ACCOUNT_CLOSED" -> HttpStatus.UNPROCESSABLE_ENTITY;
