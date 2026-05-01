@@ -8,6 +8,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch, ApiError } from '@/lib/api-client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { 
   ArrowUpRight, 
   ArrowDownLeft, 
@@ -163,7 +164,7 @@ export default function PspHome() {
                 <Sparkles size={40} />
               </div>
               <h2 className="text-3xl font-bold tracking-tight">Your Identity is Ready</h2>
-              <p className="mt-2 opacity-80">We've reserved your unique payment address:</p>
+              <p className="mt-2 opacity-80">We&apos;ve reserved your unique payment address:</p>
               
               <div className="my-8 rounded-2xl bg-white/10 px-6 py-4 font-mono text-xl backdrop-blur-md border border-white/10">
                 {vpaData?.address}
@@ -173,7 +174,7 @@ export default function PspHome() {
                 className="w-full h-16 rounded-2xl bg-white text-primary hover:bg-white/90 font-bold text-lg"
                 onClick={() => setShowWelcome(false)}
               >
-                Let's Go
+                Let&apos;s Go
               </Button>
             </div>
             {/* Animated bg elements */}
