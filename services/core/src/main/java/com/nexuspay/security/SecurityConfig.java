@@ -28,7 +28,7 @@ public class SecurityConfig {
             .cors(cors -> {}) // Uses the bean from CorsConfig.java automatically
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/auth/google", "/api/v1/auth/refresh", "/actuator/health").permitAll()
+                .requestMatchers("/api/v1/auth/google", "/api/v1/auth/refresh", "/actuator/health", "/api/health").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
