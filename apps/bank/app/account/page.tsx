@@ -149,15 +149,15 @@ export default function AccountPage() {
     <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="mx-auto max-w-5xl space-y-8">
         {/* Header */}
-        <div className="flex flex-col justify-between space-y-4 md:flex-row md:items-center md:space-y-0">
+        <div className="flex flex-col justify-between space-y-6 md:flex-row md:items-center md:space-y-0">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Bank Dashboard</h1>
-            <p className="text-muted-foreground">Manage your sandbox core banking account.</p>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Bank Dashboard</h1>
+            <p className="text-sm md:text-base text-muted-foreground">Manage your sandbox core banking account.</p>
           </div>
-          <div className="flex space-x-3">
+          <div className="flex flex-wrap gap-3">
             <Button 
               variant="outline" 
-              className="rounded-xl border-border bg-card/50" 
+              className="flex-1 md:flex-none rounded-xl border-border bg-card/50" 
               onClick={() => queryClient.invalidateQueries()} 
               disabled={accountLoading || faucetMutation.isPending}
             >
@@ -165,12 +165,12 @@ export default function AccountPage() {
               Refresh
             </Button>
             <Button 
-              className="rounded-xl bg-primary" 
+              className="flex-1 md:flex-none rounded-xl bg-primary" 
               onClick={() => faucetMutation.mutate()} 
               disabled={faucetMutation.isPending}
             >
               {faucetMutation.isPending ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <ArrowDownLeft className="mr-2 h-4 w-4" />}
-              Faucet (+₹1000)
+              Faucet
             </Button>
             <Button variant="ghost" className="rounded-xl text-destructive hover:bg-destructive/10" onClick={() => logout()}>
               <LogOut className="mr-2 h-4 w-4" />
@@ -255,8 +255,9 @@ export default function AccountPage() {
             <CardTitle>Core Ledger</CardTitle>
             <CardDescription>Raw view of all ACID-compliant transactions in the bank.</CardDescription>
           </CardHeader>
-          <CardContent className="p-6 pt-0">
-            <Table>
+          <CardContent className="p-0 md:p-6 md:pt-0">
+            <div className="overflow-x-auto">
+              <Table className="min-w-[600px] md:min-w-full">
               <TableHeader>
                 <TableRow className="border-border/50">
                   <TableHead>Type</TableHead>

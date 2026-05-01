@@ -264,7 +264,7 @@ export default function PayPage() {
               {step === 'DETAILS' ? 'Payment' : 'PIN'}
             </h1>
 
-            <div className="mt-12 space-y-8">
+            <div className="mt-8 md:mt-12 space-y-6 md:space-y-8">
               {step === 'DETAILS' ? (
                 <>
                   <div className="space-y-4">
@@ -296,14 +296,14 @@ export default function PayPage() {
                       <div className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-bold text-muted-foreground transition-colors group-focus-within:text-primary">
                         ₹
                       </div>
-                      <Input 
+                        <Input 
                         type="number"
                         placeholder="0.00" 
                         value={amount} 
                         min="1"
                         max="100000"
                         onChange={(e) => setAmount(e.target.value)}
-                        className="h-24 rounded-3xl border-none bg-secondary/50 pl-14 pr-6 text-4xl font-bold tabular-nums focus-visible:ring-primary/20 focus-visible:bg-secondary/80 transition-all"
+                        className="h-24 rounded-3xl border-none bg-secondary/50 pl-14 pr-6 text-3xl md:text-4xl font-bold tabular-nums focus-visible:ring-primary/20 focus-visible:bg-secondary/80 transition-all"
                       />
                     </div>
                   </div>
