@@ -34,6 +34,9 @@ public class BankTransaction {
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
+    @Column(name = "balance_after", nullable = false, precision = 12, scale = 2)
+    private BigDecimal balanceAfter;
+
     @PrePersist
     protected void onCreate() {
         createdAt = OffsetDateTime.now();
@@ -56,4 +59,6 @@ public class BankTransaction {
     public void setCounterpartyName(String counterpartyName) { this.counterpartyName = counterpartyName; }
     public OffsetDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
+    public BigDecimal getBalanceAfter() { return balanceAfter; }
+    public void setBalanceAfter(BigDecimal balanceAfter) { this.balanceAfter = balanceAfter; }
 }

@@ -41,6 +41,7 @@ public class FaucetService {
         transaction.setTxnType("CASH_DEPOSIT");
         transaction.setTxnReference("FCT-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         transaction.setCounterpartyName("NexusPay Faucet");
+        transaction.setBalanceAfter(saved.getBalance());
         
         bankTransactionRepository.save(transaction);
 

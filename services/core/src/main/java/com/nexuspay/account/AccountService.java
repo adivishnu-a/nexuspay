@@ -103,7 +103,8 @@ public class AccountService {
                 t.getTxnType(),
                 t.getCounterpartyName(),
                 "SUCCESS", // Bank ledger only has success records usually, or we can add status
-                t.getCreatedAt()
+                t.getCreatedAt(),
+                t.getBalanceAfter()
         );
     }
 

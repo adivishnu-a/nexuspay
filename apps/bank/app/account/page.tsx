@@ -30,6 +30,7 @@ interface Transaction {
   txnType: string;
   createdAt: string;
   txnReference: string;
+  balanceAfter: string;
 }
 
 interface PagedResponse<T> {
@@ -286,6 +287,7 @@ export default function AccountPage() {
                       <TableHead>Reference</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead className="text-right">Amount</TableHead>
+                      <TableHead className="text-right">Post-Txn Balance</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -311,13 +313,16 @@ export default function AccountPage() {
                           </Badge>
                         </TableCell>
                         <TableCell className={`text-right font-black tabular-nums tracking-tight ${txn.direction === 'CREDIT' ? 'text-emerald-600' : 'text-rose-600'}`}>
-                          {txn.direction === 'CREDIT' ? '+' : '-'}₹{parseFloat(txn.amount).toLocaleString('en-IN')}
+                          {txn.direction === 'CREDIT' ? '+' : '-'}₹{parseFloat(txn.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                        </TableCell>
+                        <TableCell className="text-right font-medium tabular-nums opacity-60">
+                          ₹{parseFloat(txn.balanceAfter || '0').toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                         </TableCell>
                       </TableRow>
                     ))}
                     {!transactions?.length && (
                       <TableRow>
-                        <TableCell colSpan={5} className="p-0">
+                        <TableCell colSpan={6} className="p-0">
                           <div className="flex h-64 flex-col items-center justify-center p-8 text-center bg-primary/5 rounded-b-3xl border-t border-dashed border-primary/20">
                             <div className="mb-4 rounded-full bg-primary/10 p-4 text-primary">
                               <RefreshCw size={32} />

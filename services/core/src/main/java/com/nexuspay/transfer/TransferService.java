@@ -153,6 +153,7 @@ public class TransferService {
         debit.setTxnType("TRANSFER");
         debit.setTxnReference(request.txnReference());
         debit.setCounterpartyName(pspTxn.getReceiverName());
+        debit.setBalanceAfter(senderAccount.getBalance());
         bankTransactionRepository.save(debit);
 
         BankTransaction credit = new BankTransaction();
@@ -162,6 +163,7 @@ public class TransferService {
         credit.setTxnType("TRANSFER");
         credit.setTxnReference(request.txnReference());
         credit.setCounterpartyName(pspTxn.getSenderName());
+        credit.setBalanceAfter(receiverAccount.getBalance());
         bankTransactionRepository.save(credit);
 
         // Finalize PSP Transaction

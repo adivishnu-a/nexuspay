@@ -12,5 +12,6 @@ public record BankTransactionResponse(
     String txnType,
     String counterpartyName,
     String status,
-    OffsetDateTime createdAt
+    OffsetDateTime createdAt,
+    BigDecimal balanceAfter
 ) {}
