@@ -256,7 +256,7 @@ export default function AccountPage() {
                       </div>
                       <div className="text-[10px] text-muted-foreground">{new Date(txn.createdAt).toLocaleString()}</div>
                     </TableCell>
-                    <TableCell className="font-mono text-xs text-muted-foreground">{txn.txnReference.substring(0, 12)}...</TableCell>
+                    <TableCell className="font-mono text-xs text-muted-foreground">{txn.txnReference.toUpperCase()}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className={`rounded-full text-[10px] ${txn.status === 'SUCCESS' ? 'border-emerald-500/50 text-emerald-600' : 'border-rose-500/50 text-rose-600'}`}>
                         {txn.status}
