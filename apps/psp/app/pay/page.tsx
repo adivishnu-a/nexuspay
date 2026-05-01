@@ -273,8 +273,10 @@ export default function PayPage() {
                         <Smartphone size={20} />
                       </div>
                       <Input 
-                        placeholder="VPA (e.g. user@nexuspay)" 
+                        placeholder="user@nexuspay" 
                         value={vpa} 
+                        maxLength={50}
+                        pattern="^[a-zA-Z0-9.\-_]+@[a-zA-Z0-9.\-_]+$"
                         onChange={(e) => setVpa(e.target.value)}
                         className="h-16 rounded-3xl border-none bg-secondary/50 pl-14 pr-6 text-lg focus-visible:ring-primary/20 focus-visible:bg-secondary/80 transition-all"
                       />
@@ -298,6 +300,8 @@ export default function PayPage() {
                         type="number"
                         placeholder="0.00" 
                         value={amount} 
+                        min="1"
+                        max="100000"
                         onChange={(e) => setAmount(e.target.value)}
                         className="h-24 rounded-3xl border-none bg-secondary/50 pl-14 pr-6 text-4xl font-bold tabular-nums focus-visible:ring-primary/20 focus-visible:bg-secondary/80 transition-all"
                       />
@@ -305,7 +309,7 @@ export default function PayPage() {
                   </div>
 
                   {errorMsg && step === 'DETAILS' && (
-                    <div className="rounded-3xl bg-rose-500/10 p-4 flex items-center space-x-3 text-rose-700 animate-in shake-in-1">
+                    <div className="rounded-3xl bg-destructive/10 p-4 flex items-center space-x-3 text-destructive animate-in shake-in-1">
                       <XCircle size={18} />
                       <span className="text-sm font-medium">{errorMsg}</span>
                     </div>
@@ -329,10 +333,12 @@ export default function PayPage() {
                     <Input 
                       type="password"
                       maxLength={4}
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       autoFocus
                       placeholder="••••" 
                       value={pin} 
-                      onChange={(e) => setPin(e.target.value)}
+                      onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
                       className="h-24 max-w-xs w-full rounded-3xl border-none bg-secondary px-6 text-center text-5xl tracking-[1.5rem] placeholder:text-muted-foreground/10 focus-visible:ring-primary transition-all shadow-inner"
                     />
                   </div>

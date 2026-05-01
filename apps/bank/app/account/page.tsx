@@ -96,7 +96,24 @@ export default function AccountPage() {
   });
 
   if (authLoading || accountLoading) {
-    return <div className="flex min-h-screen items-center justify-center">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-background p-4 md:p-8">
+        <div className="mx-auto max-w-5xl space-y-8">
+          <div className="flex flex-col justify-between space-y-4 md:flex-row md:items-center">
+            <div className="space-y-2">
+              <div className="h-8 w-48 animate-pulse rounded-lg bg-secondary" />
+              <div className="h-4 w-64 animate-pulse rounded-lg bg-secondary/50" />
+            </div>
+          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-32 animate-pulse rounded-3xl bg-secondary/30" />
+            ))}
+          </div>
+          <div className="h-64 animate-pulse rounded-3xl bg-secondary/20" />
+        </div>
+      </div>
+    );
   }
 
   if (!account) {
@@ -138,12 +155,21 @@ export default function AccountPage() {
             <p className="text-muted-foreground">Manage your sandbox core banking account.</p>
           </div>
           <div className="flex space-x-3">
-            <Button variant="outline" className="rounded-xl border-border bg-card/50" onClick={() => queryClient.invalidateQueries()}>
-              <RefreshCw className="mr-2 h-4 w-4" />
+            <Button 
+              variant="outline" 
+              className="rounded-xl border-border bg-card/50" 
+              onClick={() => queryClient.invalidateQueries()} 
+              disabled={accountLoading || faucetMutation.isPending}
+            >
+              <RefreshCw className={`mr-2 h-4 w-4 ${accountLoading || faucetMutation.isPending ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
-            <Button className="rounded-xl bg-primary" onClick={() => faucetMutation.mutate()} disabled={faucetMutation.isPending}>
-              <ArrowDownLeft className="mr-2 h-4 w-4" />
+            <Button 
+              className="rounded-xl bg-primary" 
+              onClick={() => faucetMutation.mutate()} 
+              disabled={faucetMutation.isPending}
+            >
+              {faucetMutation.isPending ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <ArrowDownLeft className="mr-2 h-4 w-4" />}
               Faucet (+₹1000)
             </Button>
             <Button variant="ghost" className="rounded-xl text-destructive hover:bg-destructive/10" onClick={() => logout()}>
@@ -155,36 +181,36 @@ export default function AccountPage() {
 
         {/* Account Overview Cards */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card className="border-none bg-card/50 shadow-sm backdrop-blur-xl">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="border-none bg-card/50 shadow-sm backdrop-blur-xl rounded-3xl">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-6">
               <CardTitle className="text-sm font-medium">Available Balance</CardTitle>
               <Wallet className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold tabular-nums">₹{parseFloat(account.balance).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
+            <CardContent className="p-6 pt-0">
+              <div className="text-3xl font-bold tabular-nums truncate">₹{parseFloat(account.balance).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
               <p className="text-xs text-muted-foreground mt-1">Real-time sandbox funds</p>
             </CardContent>
           </Card>
 
-          <Card className="border-none bg-card/50 shadow-sm backdrop-blur-xl">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="border-none bg-card/50 shadow-sm backdrop-blur-xl rounded-3xl">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-6">
               <CardTitle className="text-sm font-medium">Account Details</CardTitle>
               <Badge variant={account.status === 'ACTIVE' ? 'default' : 'destructive'} className="rounded-full">
                 {account.status}
               </Badge>
             </CardHeader>
-            <CardContent className="space-y-1">
-              <div className="text-lg font-semibold tracking-tight tabular-nums">{account.id}</div>
+            <CardContent className="space-y-1 p-6 pt-0">
+              <div className="text-lg font-semibold tracking-tight tabular-nums truncate">{account.id}</div>
               <div className="text-xs text-muted-foreground">IFSC: {account.ifsc}</div>
             </CardContent>
           </Card>
 
-          <Card className="border-none bg-card/50 shadow-sm backdrop-blur-xl">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="border-none bg-card/50 shadow-sm backdrop-blur-xl rounded-3xl">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-6">
               <CardTitle className="text-sm font-medium">Security</CardTitle>
               <Lock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-3 p-6 pt-0">
               <Dialog>
                 <DialogTrigger 
                   render={
@@ -224,12 +250,12 @@ export default function AccountPage() {
         </div>
 
         {/* Ledger */}
-        <Card className="border-none bg-card/50 shadow-sm backdrop-blur-xl">
-          <CardHeader>
+        <Card className="border-none bg-card/50 shadow-sm backdrop-blur-xl rounded-3xl">
+          <CardHeader className="p-6">
             <CardTitle>Core Ledger</CardTitle>
             <CardDescription>Raw view of all ACID-compliant transactions in the bank.</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6 pt-0">
             <Table>
               <TableHeader>
                 <TableRow className="border-border/50">
@@ -250,13 +276,13 @@ export default function AccountPage() {
                         <ArrowUpRight className="h-4 w-4 text-destructive" />
                       )}
                     </TableCell>
-                    <TableCell>
-                      <div className="font-medium">
+                    <TableCell className="max-w-[150px]">
+                      <div className="font-medium truncate">
                         {txn.txnType === 'CASH_DEPOSIT' ? 'Cash Deposit' : txn.counterpartyName}
                       </div>
                       <div className="text-[10px] text-muted-foreground">{new Date(txn.createdAt).toLocaleString()}</div>
                     </TableCell>
-                    <TableCell className="font-mono text-xs text-muted-foreground">{txn.txnReference}</TableCell>
+                    <TableCell className="font-mono text-xs text-muted-foreground max-w-[120px] truncate">{txn.txnReference}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className={`rounded-full text-[10px] ${txn.status === 'SUCCESS' ? 'border-emerald-500/50 text-emerald-600' : 'border-rose-500/50 text-rose-600'}`}>
                         {txn.status}
