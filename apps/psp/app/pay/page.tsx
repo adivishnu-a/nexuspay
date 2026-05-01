@@ -16,7 +16,8 @@ import {
   Loader2, 
   Smartphone,
   ChevronRight,
-  ShieldAlert
+  ShieldAlert,
+  Sparkles
 } from 'lucide-react';
 import { BottomBar } from '@/components/bottom-bar';
 
@@ -197,10 +198,20 @@ export default function PayPage() {
   if (step === 'STATUS') {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-background p-6">
-        <div className={`mb-8 flex h-28 w-28 items-center justify-center rounded-full ${
+        <div className={`mb-8 relative flex h-28 w-28 items-center justify-center rounded-full ${
           status === 'SUCCESS' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'
         }`}>
-          {status === 'SUCCESS' ? <CheckCircle2 size={72} /> : <XCircle size={72} />}
+          {status === 'SUCCESS' ? (
+            <>
+              <CheckCircle2 size={72} className="animate-in zoom-in-50 duration-500" />
+              <div className="absolute -top-4 -right-4 text-emerald-400 animate-bounce">
+                <Sparkles size={24} />
+              </div>
+              <div className="absolute -bottom-2 -left-6 text-emerald-400 animate-pulse delay-300">
+                <Sparkles size={20} />
+              </div>
+            </>
+          ) : <XCircle size={72} />}
         </div>
         <h2 className="text-4xl font-extrabold tracking-tight">
           {status === 'SUCCESS' ? 'Sent' : 'Failed'}

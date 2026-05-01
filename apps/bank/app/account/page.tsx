@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Wallet, Plus, ArrowUpRight, ArrowDownLeft, Lock, RefreshCw, LogOut } from 'lucide-react';
+import { Wallet, Plus, ArrowUpRight, ArrowDownLeft, Lock, RefreshCw, LogOut, Eye, EyeOff } from 'lucide-react';
 
 interface BankAccount {
   id: string;
@@ -46,6 +46,7 @@ export default function AccountPage() {
   const queryClient = useQueryClient();
 
   const [newPin, setNewPin] = useState('');
+  const [isPrivacyMode, setIsPrivacyMode] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -165,7 +166,7 @@ export default function AccountPage() {
               Refresh
             </Button>
             <Button 
-              className="flex-1 md:flex-none rounded-xl bg-primary" 
+              className={`flex-1 md:flex-none rounded-xl bg-primary transition-all duration-700 ${!accountLoading && parseFloat(account.balance) === 0 ? 'animate-pulse shadow-[0_0_20px_rgba(var(--primary),0.4)] scale-105' : ''}`} 
               onClick={() => faucetMutation.mutate()} 
               disabled={faucetMutation.isPending}
             >
@@ -181,18 +182,28 @@ export default function AccountPage() {
 
         {/* Account Overview Cards */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card className="border-none bg-card/50 shadow-sm backdrop-blur-xl rounded-3xl">
+          <Card 
+            className="border-none bg-card/50 shadow-sm backdrop-blur-xl rounded-3xl cursor-pointer group active:scale-[0.98] transition-all"
+            onClick={() => setIsPrivacyMode(!isPrivacyMode)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-6">
               <CardTitle className="text-sm font-medium">Available Balance</CardTitle>
-              <Wallet className="h-4 w-4 text-muted-foreground" />
+              <div className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                {isPrivacyMode ? <Eye size={14} /> : <EyeOff size={14} />}
+              </div>
             </CardHeader>
             <CardContent className="p-6 pt-0">
-              <div className="text-3xl font-bold tabular-nums truncate">₹{parseFloat(account.balance).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
+              <div className={`text-3xl font-bold tabular-nums truncate transition-all duration-500 ${isPrivacyMode ? 'blur-lg opacity-20' : 'blur-0 opacity-100'}`}>
+                ₹{parseFloat(account.balance).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+              </div>
               <p className="text-xs text-muted-foreground mt-1">Real-time sandbox funds</p>
             </CardContent>
           </Card>
 
-          <Card className="border-none bg-card/50 shadow-sm backdrop-blur-xl rounded-3xl">
+          <Card 
+            className="border-none bg-card/50 shadow-sm backdrop-blur-xl rounded-3xl cursor-pointer group active:scale-[0.98] transition-all"
+            onClick={() => setIsPrivacyMode(!isPrivacyMode)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-6">
               <CardTitle className="text-sm font-medium">Account Details</CardTitle>
               <Badge variant={account.status === 'ACTIVE' ? 'default' : 'destructive'} className="rounded-full">
@@ -200,7 +211,9 @@ export default function AccountPage() {
               </Badge>
             </CardHeader>
             <CardContent className="space-y-1 p-6 pt-0">
-              <div className="text-lg font-semibold tracking-tight tabular-nums truncate">{account.id}</div>
+              <div className={`text-lg font-semibold tracking-tight tabular-nums truncate transition-all duration-500 ${isPrivacyMode ? 'blur-md opacity-20' : 'blur-0 opacity-100'}`}>
+                {account.id}
+              </div>
               <div className="text-xs text-muted-foreground">IFSC: {account.ifsc}</div>
             </CardContent>
           </Card>
@@ -212,13 +225,11 @@ export default function AccountPage() {
             </CardHeader>
             <CardContent className="space-y-3 p-6 pt-0">
               <Dialog>
-                <DialogTrigger 
-                  render={
-                    <Button variant="outline" size="sm" className="w-full rounded-lg text-xs">
-                      Reset Transaction PIN
-                    </Button>
-                  }
-                />
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="w-full rounded-xl text-xs border-border/50 hover:bg-secondary/50">
+                    Reset Transaction PIN
+                  </Button>
+                </DialogTrigger>
                 <DialogContent className="sm:max-w-106.25 rounded-[2rem] border-none bg-background/90 backdrop-blur-2xl">
                   <DialogHeader>
                     <DialogTitle>Set Transaction PIN</DialogTitle>
@@ -296,8 +307,24 @@ export default function AccountPage() {
                 ))}
                 {!transactions?.length && (
                   <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                      No transactions yet.
+                    <TableCell colSpan={5} className="p-0">
+                      <div className="flex h-64 flex-col items-center justify-center p-8 text-center bg-primary/5 rounded-b-3xl border-t border-dashed border-primary/20">
+                        <div className="mb-4 rounded-full bg-primary/10 p-4 text-primary">
+                          <RefreshCw size={32} />
+                        </div>
+                        <h3 className="font-bold text-lg text-foreground">Ledger is empty</h3>
+                        <p className="mb-6 text-sm text-muted-foreground max-w-[280px]">
+                          Your sandbox bank ledger is currently blank. Tap the Faucet button above to simulate a deposit.
+                        </p>
+                        <Button 
+                          onClick={() => faucetMutation.mutate()}
+                          disabled={faucetMutation.isPending}
+                          className="rounded-full bg-primary px-6 font-bold text-white shadow-lg shadow-primary/20 group active:scale-95 transition-all"
+                        >
+                          {faucetMutation.isPending ? 'Processing...' : 'Try Faucet Now'}
+                          <Plus size={16} className="ml-2 transition-transform group-hover:rotate-90" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}

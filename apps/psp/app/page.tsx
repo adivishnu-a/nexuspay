@@ -17,9 +17,14 @@ import {
   ChevronRight,
   LogOut,
   Zap,
-  ShieldAlert
+  ShieldAlert,
+  Sparkles,
+  ArrowRight,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { BottomBar } from '@/components/bottom-bar';
+import { useState } from 'react';
 
 interface VpaDetails {
   address: string;
@@ -59,6 +64,8 @@ export default function PspHome() {
   const { user, logout, isAuthenticated, isLoading: authLoading } = useAuth();
   const queryClient = useQueryClient();
   const router = useRouter();
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [isBalanceHidden, setIsBalanceHidden] = useState(false);
 
   const handleSuccess = async (credentialResponse: { credential?: string }) => {
     const idToken = credentialResponse.credential;
@@ -79,7 +86,10 @@ export default function PspHome() {
 
   const bootstrapVpaMutation = useMutation({
     mutationFn: () => apiFetch<VpaDetails>('/psp/onboarding/bootstrap-vpa', { method: 'POST' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['vpa'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vpa'] });
+      setShowWelcome(true);
+    },
   });
 
   useEffect(() => {
@@ -145,6 +155,35 @@ export default function PspHome() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
+      {/* Welcome Onboarding Overlay */}
+      {showWelcome && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 p-6 backdrop-blur-2xl animate-in fade-in duration-500">
+          <Card className="relative w-full max-w-sm border-none bg-primary p-8 text-primary-foreground shadow-[0_0_100px_rgba(var(--primary),0.3)] rounded-[3rem] overflow-hidden">
+            <div className="relative z-10 flex flex-col items-center text-center">
+              <div className="mb-6 rounded-full bg-white/20 p-4 animate-bounce">
+                <Sparkles size={40} />
+              </div>
+              <h2 className="text-3xl font-bold tracking-tight">Your Identity is Ready</h2>
+              <p className="mt-2 opacity-80">We've reserved your unique payment address:</p>
+              
+              <div className="my-8 rounded-2xl bg-white/10 px-6 py-4 font-mono text-xl backdrop-blur-md border border-white/10">
+                {vpaData?.address}
+              </div>
+
+              <Button 
+                className="w-full h-16 rounded-2xl bg-white text-primary hover:bg-white/90 font-bold text-lg"
+                onClick={() => setShowWelcome(false)}
+              >
+                Let's Go
+              </Button>
+            </div>
+            {/* Animated bg elements */}
+            <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/10 blur-3xl animate-pulse" />
+            <div className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-white/10 blur-3xl animate-pulse delay-700" />
+          </Card>
+        </div>
+      )}
+
       {/* Top Bar */}
       <div className="sticky top-0 z-50 flex items-center justify-between bg-background/80 px-6 py-4 backdrop-blur-xl">
         <div className="flex items-center space-x-3">
@@ -186,10 +225,18 @@ export default function PspHome() {
         )}
 
         {/* Hero Balance Card */}
-        <div className="relative overflow-hidden rounded-[2rem] bg-primary p-8 text-primary-foreground shadow-2xl shadow-primary/30">
+        <div 
+          className="relative overflow-hidden rounded-[2rem] bg-primary p-8 text-primary-foreground shadow-2xl shadow-primary/30 cursor-pointer group active:scale-[0.98] transition-all duration-300"
+          onClick={() => setIsBalanceHidden(!isBalanceHidden)}
+        >
           <div className="relative z-10">
-            <div className="text-sm font-medium opacity-80">Total Balance</div>
-            <div className="mt-1 text-5xl font-bold tracking-tighter tabular-nums">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-medium opacity-80">Total Balance</div>
+              <div className="rounded-full bg-white/10 p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                {isBalanceHidden ? <Eye size={14} /> : <EyeOff size={14} />}
+              </div>
+            </div>
+            <div className={`mt-1 text-5xl font-bold tracking-tighter tabular-nums transition-all duration-500 ${isBalanceHidden ? 'blur-xl opacity-20 scale-95' : 'blur-0 opacity-100 scale-100'}`}>
               ₹{parseFloat(balanceData?.balance || '0').toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </div>
             <div className="mt-6 flex items-center space-x-2 text-sm">
@@ -200,18 +247,18 @@ export default function PspHome() {
             </div>
           </div>
           {/* Decorative background circle */}
-          <div className="absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
+          <div className="absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-white/10 blur-3xl group-hover:bg-white/20 transition-colors" />
         </div>
 
         {/* Action Grid */}
         <Button 
-          className="h-28 flex-col rounded-[2rem] bg-secondary text-secondary-foreground hover:bg-secondary/80 w-full"
+          className="h-28 flex-col rounded-[2rem] bg-secondary text-secondary-foreground hover:bg-secondary/80 w-full active:scale-95 transition-all shadow-lg hover:shadow-xl border-none"
           onClick={() => router.push('/pay')}
         >
           <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
             <Send size={20} />
           </div>
-          <span className="text-sm font-semibold">Send Money</span>
+          <span className="text-sm font-semibold tracking-tight">Send Money</span>
         </Button>
 
         {/* Transactions Section */}
@@ -252,9 +299,21 @@ export default function PspHome() {
               </div>
             ))}
             {!transactionList.length && (
-              <div className="flex h-32 flex-col items-center justify-center rounded-[2rem] border-2 border-dashed border-border text-muted-foreground">
-                <History size={32} className="mb-2 opacity-20" />
-                <span className="text-sm">No transactions yet</span>
+              <div className="flex h-64 flex-col items-center justify-center rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/5 p-8 text-center">
+                <div className="mb-4 rounded-full bg-primary/10 p-4 text-primary">
+                  <Zap size={32} />
+                </div>
+                <h3 className="font-bold text-lg text-foreground">Your wallet is empty</h3>
+                <p className="mb-6 text-sm text-muted-foreground">
+                  Get some test credits from our faucet to start making payments.
+                </p>
+                <Button 
+                  onClick={() => window.open('https://nexus-bank.vercel.app/faucet', '_blank')}
+                  className="rounded-full bg-primary px-6 font-bold text-white shadow-lg shadow-primary/20 group"
+                >
+                  Go to Faucet
+                  <ArrowRight size={16} className="ml-2 transition-transform group-hover:translate-x-1" />
+                </Button>
               </div>
             )}
           </div>
