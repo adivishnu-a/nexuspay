@@ -1,0 +1,26 @@
+# System
+.DS_Store
+*.log
+.env
+.env.local
+.env.*.local
+
+# NexusPay specific local tracking
+NEXUSPAY_BIBLE.md
+PROGRESS.md
+AGENTS.md
+
+# Node
+node_modules/
+.next/
+out/
+build/
+
+# Java
+target/
+*.class
+*.jar
+*.war
+.idea/
+*.iml
+.vscode/

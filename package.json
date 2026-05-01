@@ -1,0 +1,9 @@
+{
+  "name": "nexuspay-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:psp": "pnpm --filter psp dev",
+    "dev:bank": "pnpm --filter bank dev"
+  }
+}

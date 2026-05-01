@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: nexuspay-core
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-ttl-seconds: ${JWT_ACCESS_TTL_SECONDS:900}
+  refresh-ttl-seconds: ${JWT_REFRESH_TTL_SECONDS:604800}
+
+google:
+  client-id: ${GOOGLE_CLIENT_ID}
+
+nexuspay:
+  cors:
+    allowed-origins: ${NEXUSPAY_CORS_ALLOWED_ORIGINS}
+  cookie:
+    secure: ${COOKIE_SECURE:false}
+
+logging:
+  level:
+    root: ${LOGGING_LEVEL_ROOT:INFO}
+    com.nexuspay: ${LOGGING_LEVEL_COM_NEXUSPAY:INFO}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
