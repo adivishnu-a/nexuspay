@@ -21,7 +21,8 @@ import {
   ShieldCheck,
   Zap,
   ShieldAlert,
-  ChevronRight
+  ChevronRight,
+  LogOut
 } from 'lucide-react';
 
 interface VpaDetails {
@@ -42,7 +43,7 @@ interface Transaction {
 }
 
 export default function PspHome() {
-  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { user, logout, isAuthenticated, isLoading: authLoading } = useAuth();
   const queryClient = useQueryClient();
   const router = useRouter();
 
@@ -145,9 +146,14 @@ export default function PspHome() {
             <div className="text-sm font-semibold">{user?.fullName}</div>
           </div>
         </div>
-        <Button variant="ghost" size="icon" className="rounded-full" onClick={() => router.push('/history')}>
-          <History size={20} />
-        </Button>
+        <div className="flex items-center space-x-2">
+          <Button variant="ghost" size="icon" className="rounded-full" onClick={() => router.push('/history')}>
+            <History size={20} />
+          </Button>
+          <Button variant="ghost" size="icon" className="rounded-full text-rose-500 hover:bg-rose-500/10" onClick={() => logout()}>
+            <LogOut size={20} />
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-8 px-6 pt-6">
@@ -214,8 +220,11 @@ export default function PspHome() {
                     {txn.direction === 'CREDIT' ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />}
                   </div>
                   <div>
-                    <div className="font-semibold">{txn.counterpartyVpa}</div>
-                    <div className="text-xs text-muted-foreground">{new Date(txn.createdAt).toLocaleDateString()}</div>
+                    <div className="font-semibold">{txn.counterpartyName || txn.counterpartyVpa}</div>
+                    <div className="flex flex-col text-[10px] text-muted-foreground leading-tight">
+                      <span>{txn.counterpartyVpa}</span>
+                      <span className="opacity-60">{new Date(txn.createdAt).toLocaleDateString()}</span>
+                    </div>
                   </div>
                 </div>
                 <div className="text-right">

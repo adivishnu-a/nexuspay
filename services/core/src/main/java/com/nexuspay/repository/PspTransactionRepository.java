@@ -10,6 +10,6 @@ import java.util.UUID;
 public interface PspTransactionRepository extends JpaRepository<PspTransaction, UUID> {
     Optional<PspTransaction> findByTxnReference(String txnReference);
     
-    @org.springframework.data.jpa.repository.Query("SELECT t FROM PspTransaction t WHERE t.senderUserId = :userId OR t.receiverUserId = :userId")
+    @org.springframework.data.jpa.repository.Query("SELECT t FROM PspTransaction t WHERE t.senderUserId = :userId OR (t.receiverUserId = :userId AND t.status = 'SUCCESS')")
     Page<PspTransaction> findByUserHistory(UUID userId, Pageable pageable);
 }

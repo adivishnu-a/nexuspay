@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Wallet, Plus, ArrowUpRight, ArrowDownLeft, Lock, Unlock, RefreshCw } from 'lucide-react';
+import { Wallet, Plus, ArrowUpRight, ArrowDownLeft, Lock, Unlock, RefreshCw, LogOut } from 'lucide-react';
 
 interface BankAccount {
   id: string;
@@ -33,7 +33,7 @@ interface Transaction {
 }
 
 export default function AccountPage() {
-  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { user, logout, isAuthenticated, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -69,7 +69,11 @@ export default function AccountPage() {
       method: 'POST',
       body: JSON.stringify({ amount: 1000.00 })
     }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['bank-account', 'bank-transactions'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bank-account'] });
+      queryClient.invalidateQueries({ queryKey: ['bank-transactions'] });
+      queryClient.refetchQueries({ queryKey: ['bank-account'] });
+    },
   });
 
   const setPinMutation = useMutation({
@@ -133,6 +137,10 @@ export default function AccountPage() {
             <Button className="rounded-xl bg-primary" onClick={() => faucetMutation.mutate()} disabled={faucetMutation.isPending}>
               <ArrowDownLeft className="mr-2 h-4 w-4" />
               Faucet (+₹1000)
+            </Button>
+            <Button variant="ghost" className="rounded-xl text-rose-500 hover:bg-rose-500/10" onClick={() => logout()}>
+              <LogOut className="mr-2 h-4 w-4" />
+              Logout
             </Button>
           </div>
         </div>

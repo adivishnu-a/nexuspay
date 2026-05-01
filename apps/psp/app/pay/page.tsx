@@ -86,7 +86,10 @@ export default function PayPage() {
         setStatus(response.status === 'SUCCESS' ? 'SUCCESS' : 'FAILED');
         setErrorMsg(response.failureCode || 'Transaction failed');
         setStep('STATUS');
-        queryClient.invalidateQueries({ queryKey: ['balance', 'psp-transactions'] });
+        queryClient.invalidateQueries({ queryKey: ['balance'] });
+        queryClient.invalidateQueries({ queryKey: ['psp-transactions'] });
+        queryClient.invalidateQueries({ queryKey: ['bank-account'] });
+        queryClient.refetchQueries({ queryKey: ['balance'] });
       }
     } catch (e) {
       setStatus('FAILED');
@@ -113,7 +116,10 @@ export default function PayPage() {
           setStatus(data.status === 'SUCCESS' ? 'SUCCESS' : 'FAILED');
           setErrorMsg(data.failureCode || 'Transaction failed');
           setStep('STATUS');
-          queryClient.invalidateQueries({ queryKey: ['balance', 'psp-transactions'] });
+          queryClient.invalidateQueries({ queryKey: ['balance'] });
+          queryClient.invalidateQueries({ queryKey: ['psp-transactions'] });
+          queryClient.invalidateQueries({ queryKey: ['bank-account'] });
+          queryClient.refetchQueries({ queryKey: ['balance'] });
         }, 1500);
       }
     },

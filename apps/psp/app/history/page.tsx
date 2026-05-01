@@ -59,8 +59,9 @@ export default function HistoryPage() {
                 {txn.direction === 'CREDIT' ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />}
               </div>
               <div>
-                <div className="font-bold">{txn.counterpartyVpa}</div>
-                <div className="text-xs text-muted-foreground">{new Date(txn.createdAt).toLocaleString()}</div>
+                <div className="font-bold">{txn.counterpartyName || txn.counterpartyVpa}</div>
+                <div className="text-[10px] text-muted-foreground">{txn.counterpartyVpa}</div>
+                <div className="text-[10px] text-muted-foreground mt-1">{new Date(txn.createdAt).toLocaleString()}</div>
               </div>
             </div>
             <div className="text-right">
