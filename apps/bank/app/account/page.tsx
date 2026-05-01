@@ -146,7 +146,7 @@ export default function AccountPage() {
               <ArrowDownLeft className="mr-2 h-4 w-4" />
               Faucet (+₹1000)
             </Button>
-            <Button variant="ghost" className="rounded-xl text-rose-500 hover:bg-rose-500/10" onClick={() => logout()}>
+            <Button variant="ghost" className="rounded-xl text-destructive hover:bg-destructive/10" onClick={() => logout()}>
               <LogOut className="mr-2 h-4 w-4" />
               Logout
             </Button>
@@ -245,9 +245,9 @@ export default function AccountPage() {
                   <TableRow key={txn.id || `bank-txn-${index}`} className="border-border/50">
                     <TableCell>
                       {txn.direction === 'CREDIT' ? (
-                        <ArrowDownLeft className="h-4 w-4 text-emerald-500" />
+                        <ArrowDownLeft className="h-4 w-4 text-emerald-600" />
                       ) : (
-                        <ArrowUpRight className="h-4 w-4 text-rose-500" />
+                        <ArrowUpRight className="h-4 w-4 text-destructive" />
                       )}
                     </TableCell>
                     <TableCell>
@@ -262,7 +262,7 @@ export default function AccountPage() {
                         {txn.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className={`text-right font-semibold tabular-nums ${txn.direction === 'CREDIT' ? 'text-emerald-600' : 'text-rose-600'}`}>
+                    <TableCell className={`text-right font-semibold tabular-nums ${txn.direction === 'CREDIT' ? 'text-emerald-600' : 'text-destructive'}`}>
                       {txn.direction === 'CREDIT' ? '+' : '-'}₹{parseFloat(txn.amount).toLocaleString('en-IN')}
                     </TableCell>
                   </TableRow>

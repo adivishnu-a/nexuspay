@@ -212,7 +212,7 @@ export default function PayPage() {
           </div>
         </div>
         
-        <Card className="mt-12 w-full border-none bg-secondary/30 p-4 rounded-3xl">
+        <Card className="mt-12 w-full border-none bg-secondary p-4 rounded-3xl">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>Reference ID</span>
             <span className="font-mono">{txnRef}</span>
@@ -220,7 +220,7 @@ export default function PayPage() {
         </Card>
 
         <Button 
-          className="mt-12 w-full rounded-2xl bg-black py-8 text-lg font-bold text-white shadow-2xl"
+          className="mt-12 w-full rounded-2xl bg-foreground py-8 text-lg font-bold text-background shadow-2xl"
           onClick={() => router.push('/')}
         >
           Done
@@ -252,7 +252,7 @@ export default function PayPage() {
               </p>
             </div>
             <Button 
-              className="mt-4 rounded-2xl bg-primary px-8 font-bold text-white shadow-xl shadow-primary/20"
+              className="mt-4 rounded-2xl bg-primary px-8 font-bold text-primary-foreground shadow-xl shadow-primary/20"
               onClick={() => router.push('/settings')}
             >
               Set Security PIN Now
@@ -333,7 +333,7 @@ export default function PayPage() {
                       placeholder="••••" 
                       value={pin} 
                       onChange={(e) => setPin(e.target.value)}
-                      className="h-24 w-64 rounded-3xl border-none bg-secondary px-6 text-center text-5xl tracking-[1.5rem] placeholder:text-muted-foreground/10 focus-visible:ring-primary transition-all shadow-inner"
+                      className="h-24 max-w-xs w-full rounded-3xl border-none bg-secondary px-6 text-center text-5xl tracking-[1.5rem] placeholder:text-muted-foreground/10 focus-visible:ring-primary transition-all shadow-inner"
                     />
                   </div>
 
@@ -342,7 +342,7 @@ export default function PayPage() {
               )}
 
               <Button 
-                className="w-full rounded-[2rem] bg-primary h-20 text-xl font-bold text-white shadow-2xl shadow-primary/20 transition-all active:scale-95 disabled:opacity-50"
+                className="w-full rounded-[2rem] bg-primary h-20 text-xl font-bold text-primary-foreground shadow-2xl shadow-primary/20 transition-all active:scale-95 disabled:opacity-50"
                 disabled={step === 'DETAILS' ? (!vpa || !amount || isResolving) : pin.length < 4 || transferMutation.isPending}
                 onClick={handleNext}
               >
