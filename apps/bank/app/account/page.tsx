@@ -9,6 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { Wallet, Plus, ArrowUpRight, ArrowDownLeft, Lock, Unlock, RefreshCw } from 'lucide-react';
 
 interface BankAccount {
@@ -32,6 +34,8 @@ export default function AccountPage() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  const [newPin, setNewPin] = useState('');
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -59,6 +63,17 @@ export default function AccountPage() {
   const faucetMutation = useMutation({
     mutationFn: () => apiFetch('/bank/faucet', { method: 'POST' }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['bank-account'] }),
+  });
+
+  const setPinMutation = useMutation({
+    mutationFn: (pin: string) => apiFetch('/bank/accounts/pin', { 
+      method: 'PATCH',
+      body: JSON.stringify({ pin }),
+    }),
+    onSuccess: () => {
+      setNewPin('');
+      queryClient.invalidateQueries({ queryKey: ['bank-account'] });
+    },
   });
 
   if (authLoading || accountLoading) {
@@ -147,9 +162,37 @@ export default function AccountPage() {
               <Lock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent className="space-y-3">
-              <Button variant="outline" size="sm" className="w-full rounded-lg text-xs" onClick={() => {}}>
-                Reset Transaction PIN
-              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="w-full rounded-lg text-xs">
+                    Reset Transaction PIN
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px] rounded-[2rem] border-none bg-background/90 backdrop-blur-2xl">
+                  <DialogHeader>
+                    <DialogTitle>Set Transaction PIN</DialogTitle>
+                    <DialogDescription>
+                      This 4-digit PIN is required for all UPI-style transfers.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="flex flex-col items-center space-y-4 py-4">
+                    <Input
+                      type="password"
+                      maxLength={4}
+                      placeholder="••••"
+                      className="h-16 w-48 text-center text-4xl tracking-widest rounded-2xl bg-secondary border-none"
+                      onChange={(e) => setNewPin(e.target.value)}
+                    />
+                    <Button 
+                      className="w-full rounded-xl" 
+                      onClick={() => setPinMutation.mutate(newPin)}
+                      disabled={setPinMutation.isPending || newPin.length !== 4}
+                    >
+                      Update Secure PIN
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
               <p className="text-[10px] text-muted-foreground text-center">PIN is required for all outbound transfers.</p>
             </CardContent>
           </Card>
