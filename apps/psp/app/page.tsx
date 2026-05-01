@@ -15,7 +15,9 @@ import {
   History, 
   User as UserIcon,
   ChevronRight,
-  LogOut
+  LogOut,
+  Zap,
+  ShieldAlert
 } from 'lucide-react';
 
 interface VpaDetails {
