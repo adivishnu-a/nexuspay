@@ -120,7 +120,7 @@ export default function AccountPage() {
   if (!account) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center p-4">
-        <Card className="w-full max-w-md border-none bg-card/50 shadow-2xl backdrop-blur-xl">
+        <Card className="w-full max-w-md border-none bg-card/50 shadow-2xl backdrop-blur-xl rounded-[2.5rem]">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-[2.5rem] bg-primary/10 text-primary shadow-inner">
               <Plus size={40} />
@@ -183,17 +183,17 @@ export default function AccountPage() {
         {/* Account Overview Cards */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300 fill-mode-backwards">
           <Card 
-            className="border-none bg-card/50 shadow-sm backdrop-blur-xl rounded-3xl cursor-pointer group active:scale-[0.98] transition-all"
+            className="border-none bg-card/50 shadow-sm backdrop-blur-xl rounded-[2.5rem] cursor-pointer group active:scale-[0.98] transition-all"
             onClick={() => setIsPrivacyMode(!isPrivacyMode)}
           >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-6">
-              <CardTitle className="text-sm font-medium">Available Balance</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-8">
+              <CardTitle className="text-sm font-bold uppercase tracking-[0.1em] opacity-40">Available Balance</CardTitle>
               <div className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                 {isPrivacyMode ? <Eye size={14} /> : <EyeOff size={14} />}
               </div>
             </CardHeader>
-            <CardContent className="p-6 pt-0">
-              <div className={`text-3xl font-black tracking-tighter tabular-nums truncate transition-all duration-500 ${isPrivacyMode ? 'blur-lg opacity-20' : 'blur-0 opacity-100'}`}>
+            <CardContent className="p-8 pt-0">
+              <div className={`text-4xl font-black tracking-tighter tabular-nums truncate transition-all duration-500 ${isPrivacyMode ? 'blur-lg opacity-20' : 'blur-0 opacity-100'}`}>
                 ₹{parseFloat(account.balance).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
               </div>
               <p className="text-xs text-muted-foreground mt-1">Real-time sandbox funds</p>
@@ -230,7 +230,7 @@ export default function AccountPage() {
                     Reset Transaction PIN
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-106.25 rounded-[2rem] border-none bg-background/90 backdrop-blur-2xl">
+                <DialogContent className="sm:max-w-[425px] rounded-[2rem] border-none bg-background/90 backdrop-blur-2xl">
                   <DialogHeader>
                     <DialogTitle>Set Transaction PIN</DialogTitle>
                     <DialogDescription>
@@ -268,74 +268,75 @@ export default function AccountPage() {
               <CardTitle className="text-2xl font-black tracking-tight">Core Ledger</CardTitle>
               <CardDescription className="text-base">Raw view of all ACID-compliant transactions in the bank.</CardDescription>
             </CardHeader>
-          <CardContent className="p-0 md:p-6 md:pt-0">
-            <div className="overflow-x-auto">
-              <Table className="min-w-[600px] md:min-w-full">
-              <TableHeader>
-                <TableRow className="border-border/50">
-                  <TableHead>Type</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Reference</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {transactions?.map((txn, index) => (
-                  <TableRow key={txn.id || `bank-txn-${index}`} className="border-border/50">
-                    <TableCell>
-                      {txn.direction === 'CREDIT' ? (
-                        <ArrowDownLeft className="h-4 w-4 text-emerald-600" />
-                      ) : (
-                        <ArrowUpRight className="h-4 w-4 text-destructive" />
-                      )}
-                    </TableCell>
-                    <TableCell className="max-w-[150px]">
-                      <div className="font-medium truncate">
-                        {txn.txnType === 'CASH_DEPOSIT' ? 'Cash Deposit' : txn.counterpartyName}
-                      </div>
-                      <div className="text-[10px] text-muted-foreground">{new Date(txn.createdAt).toLocaleString()}</div>
-                    </TableCell>
-                    <TableCell className="font-mono text-xs text-muted-foreground max-w-[120px] truncate">{txn.txnReference}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${txn.status === 'SUCCESS' ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-600' : 'border-rose-500/30 bg-rose-500/5 text-rose-600'}`}>
-                        {txn.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className={`text-right font-black tabular-nums tracking-tight ${txn.direction === 'CREDIT' ? 'text-emerald-600' : 'text-rose-600'}`}>
-                      {txn.direction === 'CREDIT' ? '+' : '-'}₹{parseFloat(txn.amount).toLocaleString('en-IN')}
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {!transactions?.length && (
-                  <TableRow>
-                    <TableCell colSpan={5} className="p-0">
-                      <div className="flex h-64 flex-col items-center justify-center p-8 text-center bg-primary/5 rounded-b-3xl border-t border-dashed border-primary/20">
-                        <div className="mb-4 rounded-full bg-primary/10 p-4 text-primary">
-                          <RefreshCw size={32} />
-                        </div>
-                        <h3 className="font-bold text-lg text-foreground">Ledger is empty</h3>
-                        <p className="mb-6 text-sm text-muted-foreground max-w-[280px]">
-                          Your sandbox bank ledger is currently blank. Tap the Faucet button above to simulate a deposit.
-                        </p>
-                        <Button 
-                          onClick={() => faucetMutation.mutate()}
-                          disabled={faucetMutation.isPending}
-                          className="rounded-full bg-primary px-6 font-bold text-white shadow-lg shadow-primary/20 group active:scale-95 transition-all"
-                        >
-                          {faucetMutation.isPending ? 'Processing...' : 'Try Faucet Now'}
-                          <Plus size={16} className="ml-2 transition-transform group-hover:rotate-90" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+            <CardContent className="p-0 md:p-8 md:pt-0">
+              <div className="overflow-x-auto">
+                <Table className="min-w-[600px] md:min-w-full">
+                  <TableHeader>
+                    <TableRow className="border-border/50">
+                      <TableHead>Type</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead>Reference</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {transactions?.map((txn, index) => (
+                      <TableRow key={txn.id || `bank-txn-${index}`} className="border-border/50">
+                        <TableCell>
+                          {txn.direction === 'CREDIT' ? (
+                            <ArrowDownLeft className="h-4 w-4 text-emerald-600" />
+                          ) : (
+                            <ArrowUpRight className="h-4 w-4 text-destructive" />
+                          )}
+                        </TableCell>
+                        <TableCell className="max-w-[150px]">
+                          <div className="font-medium truncate">
+                            {txn.txnType === 'CASH_DEPOSIT' ? 'Cash Deposit' : txn.counterpartyName}
+                          </div>
+                          <div className="text-[10px] text-muted-foreground">{new Date(txn.createdAt).toLocaleString()}</div>
+                        </TableCell>
+                        <TableCell className="font-mono text-xs text-muted-foreground max-w-[120px] truncate">{txn.txnReference}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${txn.status === 'SUCCESS' ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-600' : 'border-rose-500/30 bg-rose-500/5 text-rose-600'}`}>
+                            {txn.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className={`text-right font-black tabular-nums tracking-tight ${txn.direction === 'CREDIT' ? 'text-emerald-600' : 'text-rose-600'}`}>
+                          {txn.direction === 'CREDIT' ? '+' : '-'}₹{parseFloat(txn.amount).toLocaleString('en-IN')}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {!transactions?.length && (
+                      <TableRow>
+                        <TableCell colSpan={5} className="p-0">
+                          <div className="flex h-64 flex-col items-center justify-center p-8 text-center bg-primary/5 rounded-b-3xl border-t border-dashed border-primary/20">
+                            <div className="mb-4 rounded-full bg-primary/10 p-4 text-primary">
+                              <RefreshCw size={32} />
+                            </div>
+                            <h3 className="font-bold text-lg text-foreground">Ledger is empty</h3>
+                            <p className="mb-6 text-sm text-muted-foreground max-w-[280px]">
+                              Your sandbox bank ledger is currently blank. Tap the Faucet button above to simulate a deposit.
+                            </p>
+                            <Button 
+                              onClick={() => faucetMutation.mutate()}
+                              disabled={faucetMutation.isPending}
+                              className="rounded-full bg-primary px-6 font-bold text-white shadow-lg shadow-primary/20 group active:scale-95 transition-all"
+                            >
+                              {faucetMutation.isPending ? 'Processing...' : 'Try Faucet Now'}
+                              <Plus size={16} className="ml-2 transition-transform group-hover:rotate-90" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
-  </div>
   );
 }
