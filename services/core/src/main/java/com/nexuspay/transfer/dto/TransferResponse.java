@@ -7,6 +7,7 @@ public record TransferResponse(
     String transactionId,
     String txnReference,
     String status,
+    String failureCode,
     BigDecimal amount,
     String receiverVpa,
     String receiverName,

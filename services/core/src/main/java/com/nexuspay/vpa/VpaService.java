@@ -79,6 +79,7 @@ public class VpaService {
 
     private String generateBaseSlug(String email) {
         String localPart = email.split("@")[0];
-        return localPart.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+        String slug = localPart.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+        return slug.length() > 20 ? slug.substring(0, 20) : slug;
     }
 }
