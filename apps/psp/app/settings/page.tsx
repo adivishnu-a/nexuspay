@@ -8,7 +8,7 @@ import { apiFetch, ApiError } from '@/lib/api-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowLeft, ShieldCheck, Loader2, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { BottomBar } from '@/components/bottom-bar';
 
 interface BankAccount {
@@ -85,21 +85,21 @@ export default function SettingsPage() {
       </div>
 
       <div className="max-w-md mx-auto space-y-6">
-        <Card className="border-none bg-card/50 shadow-xl backdrop-blur-xl rounded-[2rem] overflow-hidden">
-          <CardHeader className="bg-primary/5 pb-6">
+        <Card className="border-none bg-card/50 shadow-xl backdrop-blur-xl rounded-[2rem] md:rounded-3xl overflow-hidden">
+          <CardHeader className="bg-primary/5 p-6 md:p-8">
             <div className="flex items-center space-x-4">
               <div className="p-3 rounded-2xl bg-primary/10 text-primary">
                 <ShieldCheck size={24} />
               </div>
               <div>
-                <CardTitle>Transaction PIN</CardTitle>
+                <CardTitle className="text-xl">Transaction PIN</CardTitle>
                 <CardDescription>
                   {bankAccount?.pinSet ? 'Update your security PIN' : 'Set a PIN to secure your payments'}
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
-          <CardContent className="pt-8">
+          <CardContent className="p-6 md:p-8">
             {success ? (
               <div className="flex flex-col items-center py-8 text-center space-y-4 animate-in zoom-in-95">
                 <div className="h-20 w-20 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
@@ -113,40 +113,45 @@ export default function SettingsPage() {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium ml-1">New 4-Digit PIN</label>
+                  <label className="text-sm font-medium ml-1 text-muted-foreground">New 4-Digit PIN</label>
                   <Input 
                     type="password"
                     maxLength={4}
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     placeholder="••••"
                     value={pin}
-                    onChange={(e) => setPin(e.target.value)}
-                    className="h-16 text-center text-2xl tracking-[1rem] rounded-2xl border-none bg-secondary/50 focus-visible:ring-primary/20"
+                    onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
+                    className="h-20 text-center text-4xl tracking-[1.5rem] rounded-3xl border-none bg-secondary/50 focus-visible:ring-primary/20 transition-all shadow-inner"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium ml-1">Confirm PIN</label>
+                  <label className="text-sm font-medium ml-1 text-muted-foreground">Confirm PIN</label>
                   <Input 
                     type="password"
                     maxLength={4}
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     placeholder="••••"
                     value={confirmPin}
-                    onChange={(e) => setConfirmPin(e.target.value)}
-                    className="h-16 text-center text-2xl tracking-[1rem] rounded-2xl border-none bg-secondary/50 focus-visible:ring-primary/20"
+                    onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, ''))}
+                    className="h-20 text-center text-4xl tracking-[1.5rem] rounded-3xl border-none bg-secondary/50 focus-visible:ring-primary/20 transition-all shadow-inner"
                   />
                 </div>
 
                 {errorMsg && (
-                  <div className="p-4 rounded-2xl bg-rose-500/10 text-rose-600 text-sm font-medium text-center">
-                    {errorMsg}
+                  <div className="p-4 rounded-3xl bg-destructive/10 text-destructive text-sm font-semibold flex items-center justify-center space-x-2 animate-in shake-in-1">
+                    <XCircle size={16} />
+                    <span>{errorMsg}</span>
                   </div>
                 )}
 
                 <Button 
                   type="submit" 
                   disabled={setPinMutation.isPending || pin.length < 4}
-                  className="w-full h-16 rounded-2xl bg-primary text-lg font-bold text-white shadow-xl shadow-primary/20"
+                  className="w-full h-20 rounded-3xl bg-primary text-xl font-bold text-white shadow-xl shadow-primary/30 active:scale-95 transition-all"
                 >
-                  {setPinMutation.isPending ? <Loader2 className="animate-spin" /> : 'Save PIN'}
+                  {setPinMutation.isPending ? <Loader2 className="animate-spin" /> : 'Secure my Account'}
                 </Button>
               </form>
             )}
