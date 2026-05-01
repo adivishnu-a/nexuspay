@@ -6,6 +6,7 @@ import { Providers } from "@/components/providers";
 const inter = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -20,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="antialiased">
-      <body className={`${inter.variable} font-sans`}>
+      <body className={`${inter.variable} font-sans selection:bg-primary/10 selection:text-primary`}>
         <Providers>{children}</Providers>
       </body>
     </html>

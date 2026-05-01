@@ -146,7 +146,6 @@ export default function PspHome() {
               shape="circle"
               width="100%"
             />
-
           </CardContent>
         </Card>
       </div>
@@ -185,7 +184,7 @@ export default function PspHome() {
       )}
 
       {/* Top Bar */}
-      <div className="sticky top-0 z-50 flex items-center justify-between bg-background/80 px-6 py-4 backdrop-blur-xl">
+      <div className="sticky top-0 z-50 flex items-center justify-between bg-background/80 px-6 py-4 backdrop-blur-xl animate-in fade-in slide-in-from-top-4 duration-700 delay-100 fill-mode-backwards">
         <div className="flex items-center space-x-3">
           <div className="h-10 w-10 overflow-hidden rounded-full bg-secondary">
             <UserIcon className="h-full w-full p-2 text-muted-foreground" />
@@ -226,7 +225,7 @@ export default function PspHome() {
 
         {/* Hero Balance Card */}
         <div 
-          className="relative overflow-hidden rounded-[2rem] bg-primary p-8 text-primary-foreground shadow-2xl shadow-primary/30 cursor-pointer group active:scale-[0.98] transition-all duration-300"
+          className="relative overflow-hidden rounded-[2.5rem] bg-primary p-10 text-primary-foreground shadow-[0_32px_64px_-16px_rgba(var(--primary),0.4)] cursor-pointer group active:scale-[0.98] transition-all duration-500 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300 fill-mode-backwards"
           onClick={() => setIsBalanceHidden(!isBalanceHidden)}
         >
           <div className="relative z-10">
@@ -236,7 +235,7 @@ export default function PspHome() {
                 {isBalanceHidden ? <Eye size={14} /> : <EyeOff size={14} />}
               </div>
             </div>
-            <div className={`mt-1 text-5xl font-bold tracking-tighter tabular-nums transition-all duration-500 ${isBalanceHidden ? 'blur-xl opacity-20 scale-95' : 'blur-0 opacity-100 scale-100'}`}>
+            <div className={`mt-1 text-5xl font-black tracking-tighter tabular-nums transition-all duration-500 ${isBalanceHidden ? 'blur-xl opacity-20 scale-95' : 'blur-0 opacity-100 scale-100'}`}>
               ₹{parseFloat(balanceData?.balance || '0').toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </div>
             <div className="mt-6 flex items-center space-x-2 text-sm">
@@ -251,25 +250,28 @@ export default function PspHome() {
         </div>
 
         {/* Action Grid */}
-        <Button 
-          className="h-28 flex-col rounded-[2rem] bg-secondary text-secondary-foreground hover:bg-secondary/80 w-full active:scale-95 transition-all shadow-lg hover:shadow-xl border-none"
-          onClick={() => router.push('/pay')}
-        >
-          <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <Send size={20} />
-          </div>
-          <span className="text-sm font-semibold tracking-tight">Send Money</span>
-        </Button>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500 fill-mode-backwards">
+          <Button 
+            className="h-32 flex-col rounded-[2.5rem] bg-secondary text-secondary-foreground hover:bg-secondary/80 w-full active:scale-95 transition-all shadow-lg hover:shadow-xl border-none"
+            onClick={() => router.push('/pay')}
+          >
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Send size={24} />
+            </div>
+            <span className="text-base font-bold tracking-tight">Send Money</span>
+          </Button>
+          {/* Faucet placeholder/shortcut if needed, or just single large CTA */}
+        </div>
 
         {/* Transactions Section */}
-        <div>
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-700 fill-mode-backwards">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-bold">Activity</h2>
-            <Button variant="link" className="text-primary p-0" onClick={() => router.push('/history')}>See All</Button>
+            <h2 className="text-sm font-bold uppercase tracking-[0.2em] opacity-40">Transaction Stream</h2>
+            <Button variant="link" className="text-primary font-bold p-0" onClick={() => router.push('/history')}>See All</Button>
           </div>
           <div className="space-y-4">
             {transactionList.slice(0, 5).map((txn, index) => (
-              <div key={txn.id || `txn-${index}`} className="flex items-center justify-between rounded-2xl bg-card/50 p-4 backdrop-blur-sm">
+              <div key={txn.id || `txn-${index}`} className="flex items-center justify-between rounded-[2rem] bg-card/50 p-5 backdrop-blur-sm border border-border/10">
                 <div className="flex items-center space-x-4">
                   <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${
                     txn.direction === 'CREDIT' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-rose-500/10 text-rose-600'
@@ -284,18 +286,14 @@ export default function PspHome() {
                     </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className={`text-lg font-bold tabular-nums ${
-                    txn.direction === 'CREDIT' ? 'text-emerald-600' : 'text-rose-600'
-                  }`}>
-                    {txn.direction === 'CREDIT' ? '+' : '-'}₹{parseFloat(txn.amount).toLocaleString('en-IN')}
-                  </div>
-                  <div className={`text-[10px] font-bold uppercase tracking-tighter ${
-                    txn.status === 'SUCCESS' ? 'text-emerald-500' : txn.status === 'FAILED' ? 'text-rose-500' : 'text-amber-500'
-                  }`}>
-                    {txn.status}
-                  </div>
-                </div>
+                    <div className="flex flex-col items-end">
+                      <div className={`text-lg font-black tabular-nums tracking-tight ${txn.direction === 'CREDIT' ? 'text-emerald-600' : 'text-rose-600'}`}>
+                        {txn.direction === 'CREDIT' ? '+' : '-'}₹{parseFloat(txn.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                      </div>
+                      <Badge variant="outline" className={`mt-1 rounded-full px-2 py-0 text-[9px] font-bold uppercase tracking-wider ${txn.status === 'SUCCESS' ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-600' : 'border-rose-500/30 bg-rose-500/5 text-rose-600'}`}>
+                        {txn.status}
+                      </Badge>
+                    </div>
               </div>
             ))}
             {!transactionList.length && (
