@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Wallet, Plus, ArrowUpRight, ArrowDownLeft, Lock, Unlock, RefreshCw, LogOut } from 'lucide-react';
+import { Wallet, Plus, ArrowUpRight, ArrowDownLeft, Lock, RefreshCw, LogOut } from 'lucide-react';
 
 interface BankAccount {
   id: string;
@@ -30,6 +30,14 @@ interface Transaction {
   txnType: string;
   createdAt: string;
   txnReference: string;
+}
+
+interface PagedResponse<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number;
 }
 
 export default function AccountPage() {
@@ -51,9 +59,9 @@ export default function AccountPage() {
     enabled: isAuthenticated,
   });
 
-  const { data: transactionsData } = useQuery<any>({
+  const { data: transactionsData } = useQuery<PagedResponse<Transaction>>({
     queryKey: ['bank-transactions', account?.id],
-    queryFn: () => apiFetch<any>(`/bank/accounts/${account?.id}/transactions`),
+    queryFn: () => apiFetch<PagedResponse<Transaction>>(`/bank/accounts/${account?.id}/transactions`),
     enabled: !!account,
   });
 
@@ -100,7 +108,7 @@ export default function AccountPage() {
               <Plus size={32} />
             </div>
             <CardTitle>Welcome, {user?.fullName}</CardTitle>
-            <CardDescription>You don't have a sandbox bank account yet.</CardDescription>
+            <CardDescription>You don&apos;t have a sandbox bank account yet.</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center pb-10">
             <Button 
@@ -185,7 +193,7 @@ export default function AccountPage() {
                     </Button>
                   }
                 />
-                <DialogContent className="sm:max-w-[425px] rounded-[2rem] border-none bg-background/90 backdrop-blur-2xl">
+                <DialogContent className="sm:max-w-106.25 rounded-[2rem] border-none bg-background/90 backdrop-blur-2xl">
                   <DialogHeader>
                     <DialogTitle>Set Transaction PIN</DialogTitle>
                     <DialogDescription>

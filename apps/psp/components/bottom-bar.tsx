@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Wallet, History, Send } from 'lucide-react';
+import { Wallet, History } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 
 export function BottomBar() {
@@ -13,7 +13,7 @@ export function BottomBar() {
   if (!isAuthenticated) return null;
 
   return (
-    <div className="fixed bottom-6 left-1/2 flex -translate-x-1/2 items-center space-x-2 rounded-full bg-black/90 p-2 shadow-2xl backdrop-blur-xl z-[100]">
+    <div className="fixed bottom-6 left-1/2 flex -translate-x-1/2 items-center space-x-2 rounded-full bg-black/90 p-2 shadow-2xl backdrop-blur-xl z-100">
       <Button 
         variant="ghost" 
         size="icon" 

@@ -10,7 +10,7 @@ import { apiFetch } from '@/lib/api-client';
 import { useQueryClient } from '@tanstack/react-query';
 
 export default function LoginPage() {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -20,7 +20,7 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, router]);
 
-  const handleSuccess = async (credentialResponse: any) => {
+  const handleSuccess = async (credentialResponse: { credential?: string }) => {
     const idToken = credentialResponse.credential;
     const response = await apiFetch<{ accessToken: string }>('/auth/google', {
       method: 'POST',
@@ -66,15 +66,14 @@ export default function LoginPage() {
             />
           </div>
 
-          <div className="flex items-center space-x-2 text-xs text-muted-foreground/60">
-            <ShieldCheck size={14} />
-            <span>Bank-grade Encryption • Secure Sandbox</span>
+          <div className="flex items-center space-x-2 text-[10px] text-muted-foreground/30 uppercase tracking-widest">
+            <span>Secure Sandbox Environment</span>
           </div>
         </CardContent>
       </Card>
       
-      <footer className="mt-8 text-xs text-muted-foreground/40">
-        © 2026 NexusPay • SDE Portfolio Project
+      <footer className="mt-8 text-[10px] text-muted-foreground/20">
+        © 2026 NexusPay
       </footer>
     </div>
   );

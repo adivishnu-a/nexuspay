@@ -14,7 +14,16 @@ interface Transaction {
   direction: 'DEBIT' | 'CREDIT';
   status: 'SUCCESS' | 'FAILED' | 'PENDING';
   counterpartyVpa: string;
+  counterpartyName: string;
   createdAt: string;
+}
+
+interface PagedResponse<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number;
 }
 
 export default function HistoryPage() {
@@ -27,9 +36,9 @@ export default function HistoryPage() {
     }
   }, [authLoading, isAuthenticated, router]);
 
-  const { data: transactions, isLoading } = useQuery<any>({
+  const { data: transactions, isLoading } = useQuery<PagedResponse<Transaction>>({
     queryKey: ['psp-transactions'],
-    queryFn: () => apiFetch<any>('/psp/transactions'),
+    queryFn: () => apiFetch<PagedResponse<Transaction>>('/psp/transactions'),
     enabled: isAuthenticated,
   });
 

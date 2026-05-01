@@ -1,7 +1,7 @@
 package com.nexuspay.auth;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.nexuspay.auth.dto.AuthResponse;
+
 import com.nexuspay.auth.dto.UserResponse;
 import com.nexuspay.entity.RefreshToken;
 import com.nexuspay.entity.User;

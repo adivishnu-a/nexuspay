@@ -3,18 +3,14 @@
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from '@/lib/api-client';
+import { apiFetch, ApiError } from '@/lib/api-client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { 
-  Wallet, 
-  Plus, 
   ArrowUpRight, 
   ArrowDownLeft, 
-  Scan, 
   Send, 
   History, 
   User as UserIcon,
@@ -39,7 +35,24 @@ interface Transaction {
   direction: 'DEBIT' | 'CREDIT';
   status: 'SUCCESS' | 'FAILED' | 'PENDING';
   counterpartyVpa: string;
+  counterpartyName: string;
   createdAt: string;
+}
+
+interface PagedResponse<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number;
+}
+
+interface BankAccount {
+  id: string;
+  ifsc: string;
+  balance: string;
+  status: string;
+  pinSet: boolean;
 }
 
 export default function PspHome() {
@@ -47,7 +60,7 @@ export default function PspHome() {
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  const handleSuccess = async (credentialResponse: any) => {
+  const handleSuccess = async (credentialResponse: { credential?: string }) => {
     const idToken = credentialResponse.credential;
     const response = await apiFetch<{ accessToken: string }>('/auth/google', {
       method: 'POST',
@@ -70,10 +83,10 @@ export default function PspHome() {
   });
 
   useEffect(() => {
-    if (vpaError && (vpaError as any).status === 404 && isAuthenticated) {
+    if (vpaError instanceof ApiError && vpaError.status === 404 && isAuthenticated) {
       bootstrapVpaMutation.mutate();
     }
-  }, [vpaError, isAuthenticated]);
+  }, [vpaError, isAuthenticated, bootstrapVpaMutation]);
 
   const { data: balanceData } = useQuery<BalanceResponse>({
     queryKey: ['balance'],
@@ -81,15 +94,15 @@ export default function PspHome() {
     enabled: isAuthenticated,
   });
 
-  const { data: bankAccount } = useQuery<any>({
+  const { data: bankAccount } = useQuery<BankAccount>({
     queryKey: ['bank-account'],
-    queryFn: () => apiFetch<any>('/bank/accounts'),
+    queryFn: () => apiFetch<BankAccount>('/bank/accounts'),
     enabled: isAuthenticated,
   });
 
-  const { data: transactions } = useQuery<any>({
+  const { data: transactions } = useQuery<PagedResponse<Transaction>>({
     queryKey: ['psp-transactions'],
-    queryFn: () => apiFetch<any>('/psp/transactions'),
+    queryFn: () => apiFetch<PagedResponse<Transaction>>('/psp/transactions'),
     enabled: isAuthenticated,
   });
 
@@ -123,9 +136,8 @@ export default function PspHome() {
               shape="circle"
               width="100%"
             />
-            <div className="flex items-center space-x-2 text-[10px] text-muted-foreground/50 uppercase tracking-widest">
-              <ShieldCheck size={12} />
-              <span>Bank-grade security</span>
+            <div className="flex items-center space-x-2 text-[10px] text-muted-foreground/30 uppercase tracking-widest">
+              <span>Secure Transaction Environment</span>
             </div>
           </CardContent>
         </Card>
@@ -194,15 +206,15 @@ export default function PspHome() {
         </div>
 
         {/* Action Grid */}
-          <Button 
-            className="h-28 flex-col rounded-[2rem] bg-secondary text-secondary-foreground hover:bg-secondary/80 w-full"
-            onClick={() => router.push('/pay')}
-          >
-            <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <Send size={20} />
-            </div>
-            <span className="text-sm font-semibold">Send Money</span>
-          </Button>
+        <Button 
+          className="h-28 flex-col rounded-[2rem] bg-secondary text-secondary-foreground hover:bg-secondary/80 w-full"
+          onClick={() => router.push('/pay')}
+        >
+          <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <Send size={20} />
+          </div>
+          <span className="text-sm font-semibold">Send Money</span>
+        </Button>
 
         {/* Transactions Section */}
         <div>
@@ -250,7 +262,6 @@ export default function PspHome() {
           </div>
         </div>
       </div>
-
     </div>
   );
 }

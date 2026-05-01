@@ -10,8 +10,16 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ArrowLeft, ShieldCheck, Loader2, CheckCircle2 } from 'lucide-react';
 
+interface BankAccount {
+  id: string;
+  ifsc: string;
+  balance: string;
+  status: string;
+  pinSet: boolean;
+}
+
 export default function SettingsPage() {
-  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [pin, setPin] = useState('');
@@ -25,9 +33,9 @@ export default function SettingsPage() {
     }
   }, [authLoading, isAuthenticated, router]);
 
-  const { data: bankAccount } = useQuery<any>({
+  const { data: bankAccount } = useQuery<BankAccount>({
     queryKey: ['bank-account'],
-    queryFn: () => apiFetch<any>('/bank/accounts'),
+    queryFn: () => apiFetch<BankAccount>('/bank/accounts'),
     enabled: isAuthenticated,
   });
 
@@ -41,7 +49,7 @@ export default function SettingsPage() {
       setSuccess(true);
       setTimeout(() => router.push('/'), 2000);
     },
-    onError: (err: any) => {
+    onError: (err: unknown) => {
       if (err instanceof ApiError) {
         setErrorMsg(err.envelope.message);
       } else {

@@ -7,7 +7,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch, ApiError } from '@/lib/api-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { v4 as uuidv4 } from 'uuid';
 import { 
   ArrowLeft, 
@@ -28,8 +28,16 @@ interface TransferResponse {
   message?: string;
 }
 
+interface BankAccount {
+  id: string;
+  ifsc: string;
+  balance: string;
+  status: string;
+  pinSet: boolean;
+}
+
 export default function PayPage() {
-  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -43,9 +51,9 @@ export default function PayPage() {
   const [resolvedName, setResolvedName] = useState<string | null>(null);
   const [isResolving, setIsResolving] = useState(false);
 
-  const { data: bankAccount } = useQuery<any>({
+  const { data: bankAccount } = useQuery<BankAccount>({
     queryKey: ['bank-account'],
-    queryFn: () => apiFetch<any>('/bank/accounts'),
+    queryFn: () => apiFetch<BankAccount>('/bank/accounts'),
     enabled: isAuthenticated,
   });
 
@@ -62,7 +70,7 @@ export default function PayPage() {
         try {
           const res = await apiFetch<{ recipientName: string }>('/psp/vpas/check?address=' + encodeURIComponent(vpa));
           setResolvedName(res.recipientName);
-        } catch (e: any) {
+        } catch (e) {
           setResolvedName(null);
           if (e instanceof ApiError && e.envelope.code === 'CANNOT_PAY_SELF') {
             setErrorMsg(e.envelope.message);
@@ -77,11 +85,11 @@ export default function PayPage() {
     return () => clearTimeout(timer);
   }, [vpa]);
 
-  const pollStatus = useCallback(async (reference: string, attempts = 0) => {
+  const pollStatus = useCallback(async function poll(reference: string, attempts = 0) {
     try {
       const response = await apiFetch<TransferResponse>(`/psp/transfer/status/${reference}`);
       if (response.status === 'PENDING' && attempts < 5) {
-        setTimeout(() => pollStatus(reference, attempts + 1), 2000);
+        setTimeout(() => poll(reference, attempts + 1), 2000);
       } else {
         setStatus(response.status === 'SUCCESS' ? 'SUCCESS' : 'FAILED');
         setErrorMsg(response.failureCode || 'Transaction failed');
@@ -91,9 +99,9 @@ export default function PayPage() {
         queryClient.invalidateQueries({ queryKey: ['bank-account'] });
         queryClient.refetchQueries({ queryKey: ['balance'] });
       }
-    } catch (e) {
+    } catch {
       setStatus('FAILED');
-      setErrorMsg('Failed to verify status');
+      setErrorMsg('Error checking status');
       setStep('STATUS');
     }
   }, [queryClient]);
@@ -123,9 +131,13 @@ export default function PayPage() {
         }, 1500);
       }
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       setStatus('FAILED');
-      setErrorMsg(error.envelope?.message || 'Transaction failed');
+      if (error instanceof ApiError) {
+        setErrorMsg(error.envelope?.message || 'Transaction failed');
+      } else {
+        setErrorMsg('Transaction failed');
+      }
       setStep('STATUS');
     },
   });
@@ -144,7 +156,7 @@ export default function PayPage() {
           setErrorMsg('VPA not found');
           setTimeout(() => setErrorMsg(''), 3000);
         }
-      } catch (e: any) {
+      } catch (e) {
         if (e instanceof ApiError) {
           setErrorMsg(e.envelope.message);
         } else {
@@ -238,8 +250,8 @@ export default function PayPage() {
             </div>
             <div className="space-y-2">
               <h1 className="text-3xl font-extrabold tracking-tight text-rose-600">PIN Required</h1>
-              <p className="text-muted-foreground max-w-[280px] mx-auto">
-                You haven't set a security PIN for your account yet. You must set one before you can make payments.
+              <p className="text-muted-foreground max-w-70 mx-auto">
+                You haven&apos;t set a security PIN for your account yet. You must set one before you can make payments.
               </p>
             </div>
             <Button 
