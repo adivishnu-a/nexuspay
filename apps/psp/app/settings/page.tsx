@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ArrowLeft, ShieldCheck, Loader2, CheckCircle2 } from 'lucide-react';
+import { BottomBar } from '@/components/bottom-bar';
 
 interface BankAccount {
   id: string;
@@ -152,6 +153,7 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
       </div>
+      <BottomBar />
     </div>
   );
 }

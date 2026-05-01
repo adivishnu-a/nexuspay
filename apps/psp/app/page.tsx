@@ -19,6 +19,7 @@ import {
   Zap,
   ShieldAlert
 } from 'lucide-react';
+import { BottomBar } from '@/components/bottom-bar';
 
 interface VpaDetails {
   address: string;
@@ -135,9 +136,7 @@ export default function PspHome() {
               shape="circle"
               width="100%"
             />
-            <div className="flex items-center space-x-2 text-[10px] text-muted-foreground/30 uppercase tracking-widest">
-              <span>Secure Transaction Environment</span>
-            </div>
+
           </CardContent>
         </Card>
       </div>
@@ -261,6 +260,7 @@ export default function PspHome() {
           </div>
         </div>
       </div>
+      <BottomBar />
     </div>
   );
 }

@@ -19,6 +19,7 @@ import {
   ChevronRight,
   ShieldAlert
 } from 'lucide-react';
+import { BottomBar } from '@/components/bottom-bar';
 
 interface TransferResponse {
   transactionId: string;
@@ -187,12 +188,9 @@ export default function PayPage() {
         </div>
         <h2 className="text-2xl font-bold">Securing Payment</h2>
         <p className="mt-2 text-center text-muted-foreground">
-          Encrypted transfer to <span className="font-semibold text-foreground">{vpa}</span>
+          Transfer to <span className="font-semibold text-foreground">{vpa}</span>
         </p>
-        <div className="mt-12 flex items-center space-x-2 text-xs text-muted-foreground/40 uppercase tracking-widest">
-          <ShieldCheck size={14} />
-          <span>PCI-DSS Compliant</span>
-        </div>
+
       </div>
     );
   }
@@ -281,17 +279,18 @@ export default function PayPage() {
                         onChange={(e) => setVpa(e.target.value)}
                         className="h-16 rounded-3xl border-none bg-secondary/50 pl-14 pr-6 text-lg focus-visible:ring-primary/20 focus-visible:bg-secondary/80 transition-all"
                       />
-                      {resolvedName && (
-                        <div className="absolute right-6 top-1/2 -translate-y-1/2 text-sm font-semibold text-primary animate-in fade-in slide-in-from-right-2">
-                          {resolvedName}
-                        </div>
-                      )}
                       {isResolving && (
                         <div className="absolute right-6 top-1/2 -translate-y-1/2">
                           <Loader2 size={16} className="animate-spin text-muted-foreground" />
                         </div>
                       )}
                     </div>
+                    {resolvedName && (
+                      <div className="px-4 py-2 flex items-center space-x-2 text-primary animate-in fade-in slide-in-from-top-1 duration-300">
+                        <div className="h-1 w-1 rounded-full bg-primary" />
+                        <span className="text-sm font-semibold">{resolvedName}</span>
+                      </div>
+                    )}
                     <div className="relative group">
                       <div className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-bold text-muted-foreground transition-colors group-focus-within:text-primary">
                         ₹
@@ -339,10 +338,7 @@ export default function PayPage() {
                     />
                   </div>
 
-                  <div className="mt-8 flex items-center space-x-2 text-xs text-muted-foreground">
-                    <ShieldCheck size={14} className="text-primary" />
-                    <span>Encrypted on-device PIN</span>
-                  </div>
+
                 </div>
               )}
 
@@ -362,6 +358,7 @@ export default function PayPage() {
           </>
         )}
       </div>
+      {step === 'DETAILS' && <BottomBar />}
     </div>
   );
 }

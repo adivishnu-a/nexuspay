@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api-client';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowDownLeft, ArrowUpRight, History as HistoryIcon } from 'lucide-react';
+import { BottomBar } from '@/components/bottom-bar';
 
 interface Transaction {
   id: string;
@@ -94,6 +95,7 @@ export default function HistoryPage() {
           </div>
         )}
       </div>
+      <BottomBar />
     </div>
   );
 }

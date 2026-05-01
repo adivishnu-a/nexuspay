@@ -48,6 +48,16 @@ export async function apiFetch<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const correlationId = uuidv4();
+
+  // Immediate fail-fast if offline
+  if (typeof window !== 'undefined' && !navigator.onLine) {
+    throw new ApiError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Network unreachable. Please check your connection.',
+      correlationId: 'offline',
+    }, 0);
+  }
+
   const token = await getAccessToken();
 
   const headers = new Headers(options.headers);

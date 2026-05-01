@@ -29,7 +29,6 @@ export default function RootLayout({
       <body className={`${inter.variable} font-sans`}>
         <Providers>
           {children}
-          <BottomBar />
         </Providers>
       </body>
     </html>
