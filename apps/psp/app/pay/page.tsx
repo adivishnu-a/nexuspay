@@ -13,7 +13,6 @@ import {
   ArrowLeft, 
   CheckCircle2, 
   XCircle, 
-  ShieldCheck, 
   Loader2, 
   Smartphone,
   ChevronRight,
