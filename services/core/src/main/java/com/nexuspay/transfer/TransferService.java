@@ -60,6 +60,12 @@ public class TransferService {
         Optional<PspTransaction> existingTxn = pspTransactionRepository.findByTxnReference(request.txnReference());
         if (existingTxn.isPresent()) {
             PspTransaction txn = existingTxn.get();
+            // Verify payload consistency
+            if (txn.getAmount().compareTo(request.amount()) != 0 || 
+                !txn.getReceiverVpa().equalsIgnoreCase(request.receiverVpa())) {
+                throw new NexusPayException("IDEMPOTENCY_CONFLICT", 
+                    "Idempotency key reused with different payload (amount/receiver).");
+            }
             return mapToTransferResponse(txn, txn.getReceiverVpa(), txn.getReceiverName());
         }
 
