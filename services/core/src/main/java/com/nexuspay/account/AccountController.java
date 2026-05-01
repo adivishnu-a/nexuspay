@@ -54,10 +54,10 @@ public class AccountController {
     }
 
     @GetMapping("/{id}/transactions")
-    public ResponseEntity<Page<com.nexuspay.transfer.dto.TransactionResponse>> listTransactions(
+    public ResponseEntity<Page<com.nexuspay.account.dto.BankTransactionResponse>> listTransactions(
             @AuthenticationPrincipal UUID userId,
             @PathVariable String id,
-            @PageableDefault(size = 20) Pageable pageable
+            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
     ) {
         return ResponseEntity.ok(accountService.listAccountTransactions(userId, id, pageable));
     }

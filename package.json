@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "dev": "pnpm --filter \"*\" dev",
     "dev:psp": "pnpm --filter psp dev",
-    "dev:bank": "pnpm --filter bank dev"
+    "dev:bank": "pnpm --filter bank dev",
+    "backend": "cd services/core && mvnw spring-boot:run"
   }
 }

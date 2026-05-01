@@ -60,6 +60,13 @@ public class VpaService {
     }
 
     @Transactional(readOnly = true)
+    public VpaResponse getVpaByUserId(UUID userId) {
+        Vpa vpa = vpaRepository.findByUserId(userId)
+                .orElseThrow(() -> new NexusPayException("NOT_FOUND", "VPA not found for user"));
+        return new VpaResponse(vpa.getAddress());
+    }
+
+    @Transactional(readOnly = true)
     public VpaCheckResponse checkVpa(UUID authenticatedUserId, String address) {
         Optional<Vpa> vpaOpt = vpaRepository.findByAddress(address);
         if (vpaOpt.isEmpty()) {

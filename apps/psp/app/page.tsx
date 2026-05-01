@@ -19,12 +19,13 @@ import {
   History, 
   User as UserIcon,
   ShieldCheck,
-  Zap
+  Zap,
+  ShieldAlert,
+  ChevronRight
 } from 'lucide-react';
 
 interface VpaDetails {
-  vpa: string;
-  bankAccountNumber: string;
+  address: string;
 }
 
 interface BalanceResponse {
@@ -37,7 +38,7 @@ interface Transaction {
   direction: 'DEBIT' | 'CREDIT';
   status: 'SUCCESS' | 'FAILED' | 'PENDING';
   counterpartyVpa: string;
-  timestamp: string;
+  createdAt: string;
 }
 
 export default function PspHome() {
@@ -55,23 +56,43 @@ export default function PspHome() {
     queryClient.invalidateQueries({ queryKey: ['me'] });
   };
 
-  const { data: vpaData } = useQuery<VpaDetails>({
+  const { data: vpaData, error: vpaError } = useQuery<VpaDetails>({
     queryKey: ['vpa'],
-    queryFn: () => apiFetch<VpaDetails>('/vpa'),
+    queryFn: () => apiFetch<VpaDetails>('/psp/vpas/me'),
     enabled: isAuthenticated,
+    retry: false,
   });
+
+  const bootstrapVpaMutation = useMutation({
+    mutationFn: () => apiFetch<VpaDetails>('/psp/onboarding/bootstrap-vpa', { method: 'POST' }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['vpa'] }),
+  });
+
+  useEffect(() => {
+    if (vpaError && (vpaError as any).status === 404 && isAuthenticated) {
+      bootstrapVpaMutation.mutate();
+    }
+  }, [vpaError, isAuthenticated]);
 
   const { data: balanceData } = useQuery<BalanceResponse>({
     queryKey: ['balance'],
-    queryFn: () => apiFetch<BalanceResponse>('/transfer/balance'),
+    queryFn: () => apiFetch<BalanceResponse>('/psp/balance'),
     enabled: isAuthenticated,
   });
 
-  const { data: transactions } = useQuery<Transaction[]>({
-    queryKey: ['psp-transactions'],
-    queryFn: () => apiFetch<Transaction[]>('/transfer/history'),
+  const { data: bankAccount } = useQuery<any>({
+    queryKey: ['bank-account'],
+    queryFn: () => apiFetch<any>('/bank/accounts'),
     enabled: isAuthenticated,
   });
+
+  const { data: transactions } = useQuery<any>({
+    queryKey: ['psp-transactions'],
+    queryFn: () => apiFetch<any>('/psp/transactions'),
+    enabled: isAuthenticated,
+  });
+
+  const transactionList: Transaction[] = transactions?.content || [];
 
   if (authLoading) {
     return <div className="flex min-h-screen items-center justify-center">Loading...</div>;
@@ -124,12 +145,30 @@ export default function PspHome() {
             <div className="text-sm font-semibold">{user?.fullName}</div>
           </div>
         </div>
-        <Button variant="ghost" size="icon" className="rounded-full">
+        <Button variant="ghost" size="icon" className="rounded-full" onClick={() => router.push('/history')}>
           <History size={20} />
         </Button>
       </div>
 
       <div className="space-y-8 px-6 pt-6">
+        {bankAccount && !bankAccount.pinSet && (
+          <div 
+            className="rounded-[2rem] bg-rose-500 p-6 text-white shadow-2xl shadow-rose-500/20 animate-in slide-in-from-top-4 duration-500 cursor-pointer active:scale-95 transition-transform"
+            onClick={() => router.push('/settings')}
+          >
+            <div className="flex items-center space-x-4">
+              <div className="rounded-2xl bg-white/20 p-3">
+                <ShieldAlert size={24} />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold">Security PIN Required</h3>
+                <p className="text-xs text-white/80">You must set a PIN before making any payments.</p>
+              </div>
+              <ChevronRight size={20} className="opacity-50" />
+            </div>
+          </div>
+        )}
+
         {/* Hero Balance Card */}
         <div className="relative overflow-hidden rounded-[2rem] bg-primary p-8 text-primary-foreground shadow-2xl shadow-primary/30">
           <div className="relative z-10">
@@ -141,7 +180,7 @@ export default function PspHome() {
               <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20">
                 <Zap size={12} />
               </div>
-              <span className="font-mono opacity-90">{vpaData?.vpa || 'creating vpa...'}</span>
+              <span className="font-mono opacity-90">{vpaData?.address || (bootstrapVpaMutation.isPending ? 'creating...' : 'no vpa')}</span>
             </div>
           </div>
           {/* Decorative background circle */}
@@ -149,9 +188,8 @@ export default function PspHome() {
         </div>
 
         {/* Action Grid */}
-        <div className="grid grid-cols-2 gap-4">
           <Button 
-            className="h-28 flex-col rounded-[2rem] bg-secondary text-secondary-foreground hover:bg-secondary/80"
+            className="h-28 flex-col rounded-[2rem] bg-secondary text-secondary-foreground hover:bg-secondary/80 w-full"
             onClick={() => router.push('/pay')}
           >
             <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -159,26 +197,16 @@ export default function PspHome() {
             </div>
             <span className="text-sm font-semibold">Send Money</span>
           </Button>
-          <Button 
-            className="h-28 flex-col rounded-[2rem] bg-secondary text-secondary-foreground hover:bg-secondary/80"
-            onClick={() => {}}
-          >
-            <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600">
-              <Scan size={20} />
-            </div>
-            <span className="text-sm font-semibold">Scan QR</span>
-          </Button>
-        </div>
 
         {/* Transactions Section */}
         <div>
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-xl font-bold">Activity</h2>
-            <Button variant="link" className="text-primary p-0">See All</Button>
+            <Button variant="link" className="text-primary p-0" onClick={() => router.push('/history')}>See All</Button>
           </div>
           <div className="space-y-4">
-            {transactions?.slice(0, 5).map((txn) => (
-              <div key={txn.id} className="flex items-center justify-between rounded-2xl bg-card/50 p-4 backdrop-blur-sm">
+            {transactionList.slice(0, 5).map((txn, index) => (
+              <div key={txn.id || `txn-${index}`} className="flex items-center justify-between rounded-2xl bg-card/50 p-4 backdrop-blur-sm">
                 <div className="flex items-center space-x-4">
                   <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${
                     txn.direction === 'CREDIT' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-rose-500/10 text-rose-600'
@@ -187,17 +215,24 @@ export default function PspHome() {
                   </div>
                   <div>
                     <div className="font-semibold">{txn.counterpartyVpa}</div>
-                    <div className="text-xs text-muted-foreground">{new Date(txn.timestamp).toLocaleDateString()}</div>
+                    <div className="text-xs text-muted-foreground">{new Date(txn.createdAt).toLocaleDateString()}</div>
                   </div>
                 </div>
-                <div className={`text-lg font-bold tabular-nums ${
-                  txn.direction === 'CREDIT' ? 'text-emerald-600' : 'text-rose-600'
-                }`}>
-                  {txn.direction === 'CREDIT' ? '+' : '-'}₹{parseFloat(txn.amount).toLocaleString('en-IN')}
+                <div className="text-right">
+                  <div className={`text-lg font-bold tabular-nums ${
+                    txn.direction === 'CREDIT' ? 'text-emerald-600' : 'text-rose-600'
+                  }`}>
+                    {txn.direction === 'CREDIT' ? '+' : '-'}₹{parseFloat(txn.amount).toLocaleString('en-IN')}
+                  </div>
+                  <div className={`text-[10px] font-bold uppercase tracking-tighter ${
+                    txn.status === 'SUCCESS' ? 'text-emerald-500' : txn.status === 'FAILED' ? 'text-rose-500' : 'text-amber-500'
+                  }`}>
+                    {txn.status}
+                  </div>
                 </div>
               </div>
             ))}
-            {!transactions?.length && (
+            {!transactionList.length && (
               <div className="flex h-32 flex-col items-center justify-center rounded-[2rem] border-2 border-dashed border-border text-muted-foreground">
                 <History size={32} className="mb-2 opacity-20" />
                 <span className="text-sm">No transactions yet</span>
@@ -207,18 +242,6 @@ export default function PspHome() {
         </div>
       </div>
 
-      {/* Floating Action Bar (Bottom) */}
-      <div className="fixed bottom-6 left-1/2 flex -translate-x-1/2 items-center space-x-2 rounded-full bg-black/90 p-2 shadow-2xl backdrop-blur-xl">
-        <Button variant="ghost" size="icon" className="h-12 w-12 rounded-full text-white hover:bg-white/10">
-          <Wallet size={24} />
-        </Button>
-        <Button className="h-12 rounded-full bg-primary px-8 font-bold text-white shadow-lg shadow-primary/40">
-          Pay Now
-        </Button>
-        <Button variant="ghost" size="icon" className="h-12 w-12 rounded-full text-white hover:bg-white/10">
-          <UserIcon size={24} />
-        </Button>
-      </div>
     </div>
   );
 }

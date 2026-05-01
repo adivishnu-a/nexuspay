@@ -23,6 +23,11 @@ public class VpaController {
         return ResponseEntity.ok(vpaService.bootstrapVpa(userId));
     }
 
+    @GetMapping("/vpas/me")
+    public ResponseEntity<VpaResponse> getMyVpa(@AuthenticationPrincipal UUID userId) {
+        return ResponseEntity.ok(vpaService.getVpaByUserId(userId));
+    }
+
     @GetMapping("/vpas/check")
     public ResponseEntity<VpaCheckResponse> checkVpa(
             @AuthenticationPrincipal UUID userId,

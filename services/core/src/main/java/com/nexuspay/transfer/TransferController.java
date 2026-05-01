@@ -1,6 +1,7 @@
 package com.nexuspay.transfer;
 
-import com.nexuspay.transfer.dto.TransactionResponse;
+import com.nexuspay.transfer.dto.BalanceResponse;
+
 import com.nexuspay.transfer.dto.TransferRequest;
 import com.nexuspay.transfer.dto.TransferResponse;
 import jakarta.validation.Valid;
@@ -31,6 +32,11 @@ public class TransferController {
         return ResponseEntity.ok(transferService.transfer(userId, request));
     }
 
+    @GetMapping("/balance")
+    public ResponseEntity<BalanceResponse> getBalance(@AuthenticationPrincipal UUID userId) {
+        return ResponseEntity.ok(new BalanceResponse(transferService.getBalance(userId)));
+    }
+
     @GetMapping("/transfer/status/{txnReference}")
     public ResponseEntity<TransferResponse> getStatus(
             @AuthenticationPrincipal UUID userId,
@@ -40,9 +46,9 @@ public class TransferController {
     }
 
     @GetMapping("/transactions")
-    public ResponseEntity<Page<TransactionResponse>> listTransactions(
+    public ResponseEntity<Page<com.nexuspay.transfer.dto.PspTransactionResponse>> listTransactions(
             @AuthenticationPrincipal UUID userId,
-            @PageableDefault(size = 20) Pageable pageable
+            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
     ) {
         return ResponseEntity.ok(transferService.listUserTransactions(userId, pageable));
     }

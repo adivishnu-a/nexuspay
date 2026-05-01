@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import { BottomBar } from "@/components/bottom-bar";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -26,7 +27,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="antialiased">
       <body className={`${inter.variable} font-sans`}>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <BottomBar />
+        </Providers>
       </body>
     </html>
   );

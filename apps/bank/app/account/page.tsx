@@ -14,10 +14,11 @@ import { Input } from '@/components/ui/input';
 import { Wallet, Plus, ArrowUpRight, ArrowDownLeft, Lock, Unlock, RefreshCw } from 'lucide-react';
 
 interface BankAccount {
-  accountNumber: string;
+  id: string;
   ifsc: string;
   balance: string;
   status: 'ACTIVE' | 'LOCKED';
+  pinSet: boolean;
 }
 
 interface Transaction {
@@ -25,8 +26,9 @@ interface Transaction {
   amount: string;
   direction: 'DEBIT' | 'CREDIT';
   status: 'SUCCESS' | 'FAILED';
-  description: string;
-  timestamp: string;
+  counterpartyName: string;
+  txnType: string;
+  createdAt: string;
   txnReference: string;
 }
 
@@ -49,11 +51,13 @@ export default function AccountPage() {
     enabled: isAuthenticated,
   });
 
-  const { data: transactions } = useQuery<Transaction[]>({
-    queryKey: ['bank-transactions'],
-    queryFn: () => apiFetch<Transaction[]>('/bank/transactions'),
+  const { data: transactionsData } = useQuery<any>({
+    queryKey: ['bank-transactions', account?.id],
+    queryFn: () => apiFetch<any>(`/bank/accounts/${account?.id}/transactions`),
     enabled: !!account,
   });
+
+  const transactions: Transaction[] = transactionsData?.content || [];
 
   const openAccountMutation = useMutation({
     mutationFn: () => apiFetch('/bank/accounts', { method: 'POST' }),
@@ -61,13 +65,16 @@ export default function AccountPage() {
   });
 
   const faucetMutation = useMutation({
-    mutationFn: () => apiFetch('/bank/faucet', { method: 'POST' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['bank-account'] }),
+    mutationFn: () => apiFetch(`/bank/accounts/${account?.id}/deposit`, { 
+      method: 'POST',
+      body: JSON.stringify({ amount: 1000.00 })
+    }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['bank-account', 'bank-transactions'] }),
   });
 
   const setPinMutation = useMutation({
-    mutationFn: (pin: string) => apiFetch('/bank/accounts/pin', { 
-      method: 'PATCH',
+    mutationFn: (pin: string) => apiFetch(`/bank/accounts/${account?.id}/pin`, { 
+      method: 'PUT',
       body: JSON.stringify({ pin }),
     }),
     onSuccess: () => {
@@ -151,7 +158,7 @@ export default function AccountPage() {
               </Badge>
             </CardHeader>
             <CardContent className="space-y-1">
-              <div className="text-lg font-semibold tracking-tight tabular-nums">{account.accountNumber}</div>
+              <div className="text-lg font-semibold tracking-tight tabular-nums">{account.id}</div>
               <div className="text-xs text-muted-foreground">IFSC: {account.ifsc}</div>
             </CardContent>
           </Card>
@@ -163,11 +170,13 @@ export default function AccountPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="w-full rounded-lg text-xs">
-                    Reset Transaction PIN
-                  </Button>
-                </DialogTrigger>
+                <DialogTrigger 
+                  render={
+                    <Button variant="outline" size="sm" className="w-full rounded-lg text-xs">
+                      Reset Transaction PIN
+                    </Button>
+                  }
+                />
                 <DialogContent className="sm:max-w-[425px] rounded-[2rem] border-none bg-background/90 backdrop-blur-2xl">
                   <DialogHeader>
                     <DialogTitle>Set Transaction PIN</DialogTitle>
@@ -216,8 +225,8 @@ export default function AccountPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {transactions?.map((txn) => (
-                  <TableRow key={txn.id} className="border-border/50">
+                {transactions?.map((txn, index) => (
+                  <TableRow key={txn.id || `bank-txn-${index}`} className="border-border/50">
                     <TableCell>
                       {txn.direction === 'CREDIT' ? (
                         <ArrowDownLeft className="h-4 w-4 text-emerald-500" />
@@ -226,8 +235,10 @@ export default function AccountPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <div className="font-medium">{txn.description}</div>
-                      <div className="text-[10px] text-muted-foreground">{new Date(txn.timestamp).toLocaleString()}</div>
+                      <div className="font-medium">
+                        {txn.txnType === 'CASH_DEPOSIT' ? 'Cash Deposit' : txn.counterpartyName}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground">{new Date(txn.createdAt).toLocaleString()}</div>
                     </TableCell>
                     <TableCell className="font-mono text-xs text-muted-foreground">{txn.txnReference.substring(0, 12)}...</TableCell>
                     <TableCell>

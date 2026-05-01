@@ -1,12 +1,12 @@
 package com.nexuspay.account;
 
 import com.nexuspay.account.dto.AccountResponse;
+import com.nexuspay.account.dto.BankTransactionResponse;
 import com.nexuspay.entity.Account;
-import com.nexuspay.entity.Transaction;
+import com.nexuspay.entity.BankTransaction;
 import com.nexuspay.exception.NexusPayException;
 import com.nexuspay.repository.AccountRepository;
-import com.nexuspay.repository.TransactionRepository;
-import com.nexuspay.transfer.dto.TransactionResponse;
+import com.nexuspay.repository.BankTransactionRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,15 +22,15 @@ import java.util.UUID;
 public class AccountService {
 
     private final AccountRepository accountRepository;
-    private final TransactionRepository transactionRepository;
+    private final BankTransactionRepository bankTransactionRepository;
     private final PasswordEncoder passwordEncoder;
     private final SecureRandom secureRandom = new SecureRandom();
 
     private static final Set<String> TRIVIAL_PINS = Set.of("0000", "1111", "2222", "3333", "4444", "5555", "6666", "7777", "8888", "9999", "1234");
 
-    public AccountService(AccountRepository accountRepository, TransactionRepository transactionRepository, PasswordEncoder passwordEncoder) {
+    public AccountService(AccountRepository accountRepository, BankTransactionRepository bankTransactionRepository, PasswordEncoder passwordEncoder) {
         this.accountRepository = accountRepository;
-        this.transactionRepository = transactionRepository;
+        this.bankTransactionRepository = bankTransactionRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -88,24 +88,21 @@ public class AccountService {
     }
 
     @Transactional(readOnly = true)
-    public Page<TransactionResponse> listAccountTransactions(UUID userId, String accountId, Pageable pageable) {
+    public Page<BankTransactionResponse> listAccountTransactions(UUID userId, String accountId, Pageable pageable) {
         getAccountAndVerifyOwnership(userId, accountId);
-        Page<Transaction> transactions = transactionRepository.findByAccountId(accountId, pageable);
-        return transactions.map(t -> mapToTransactionResponse(t, accountId));
+        Page<BankTransaction> transactions = bankTransactionRepository.findByAccountId(accountId, pageable);
+        return transactions.map(this::mapToBankTransactionResponse);
     }
 
-    private TransactionResponse mapToTransactionResponse(Transaction t, String perspectiveAccountId) {
-        String direction = t.getSenderAccountId().equals(perspectiveAccountId) ? "DEBIT" : "CREDIT";
-        return new TransactionResponse(
-                t.getId().toString(),
+    private BankTransactionResponse mapToBankTransactionResponse(BankTransaction t) {
+        return new BankTransactionResponse(
+                t.getId(),
                 t.getTxnReference(),
-                t.getStatus(),
-                t.getFailureCode(),
                 t.getAmount(),
-                "TODO_VPA", // VPA resolution is usually done via a join or omitted in raw ledger
-                "TODO_NAME",
-                "TODO_NAME",
-                direction,
+                t.getDirection(),
+                t.getTxnType(),
+                t.getCounterpartyName(),
+                "SUCCESS", // Bank ledger only has success records usually, or we can add status
                 t.getCreatedAt()
         );
     }
