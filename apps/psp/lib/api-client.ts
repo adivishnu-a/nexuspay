@@ -15,7 +15,7 @@ export interface ApiErrorEnvelope {
   code: ApiErrorCode;
   message: string;
   correlationId: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 export class ApiError extends Error {
@@ -83,7 +83,7 @@ export async function apiFetch<T>(
     let errorEnvelope: ApiErrorEnvelope;
     try {
       errorEnvelope = await response.json();
-    } catch (e) {
+    } catch {
       errorEnvelope = {
         code: 'INTERNAL_SERVER_ERROR',
         message: 'An unexpected error occurred.',
