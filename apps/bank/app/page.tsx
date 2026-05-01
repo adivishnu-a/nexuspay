@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Building2, ShieldCheck } from 'lucide-react';
+import { Building2 } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { useQueryClient } from '@tanstack/react-query';
 
