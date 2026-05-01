@@ -188,13 +188,17 @@ export default function AccountPage() {
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-8">
               <CardTitle className="text-sm font-bold uppercase tracking-[0.1em] opacity-40">Available Balance</CardTitle>
-              <div className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="text-muted-foreground opacity-40 group-hover:opacity-100 transition-opacity">
                 {isPrivacyMode ? <Eye size={14} /> : <EyeOff size={14} />}
               </div>
             </CardHeader>
             <CardContent className="p-8 pt-0">
-              <div className={`text-4xl font-black tracking-tighter tabular-nums truncate transition-all duration-500 ${isPrivacyMode ? 'blur-lg opacity-20' : 'blur-0 opacity-100'}`}>
-                ₹{parseFloat(account.balance).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+              <div className="text-4xl font-black tracking-tighter tabular-nums truncate transition-all duration-500">
+                {isPrivacyMode ? (
+                  <span className="opacity-20 tracking-[0.3em] text-3xl">••••••</span>
+                ) : (
+                  `₹${parseFloat(account.balance).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+                )}
               </div>
               <p className="text-xs text-muted-foreground mt-1">Real-time sandbox funds</p>
             </CardContent>
@@ -211,8 +215,12 @@ export default function AccountPage() {
               </Badge>
             </CardHeader>
             <CardContent className="space-y-1 p-8 pt-0">
-              <div className={`text-xl font-bold tracking-tight tabular-nums truncate transition-all duration-500 ${isPrivacyMode ? 'blur-md opacity-20' : 'blur-0 opacity-100'}`}>
-                {account.id}
+              <div className="text-xl font-bold tracking-tight tabular-nums truncate transition-all duration-500">
+                {isPrivacyMode ? (
+                  <span className="opacity-20 tracking-[0.2em]">••••••••</span>
+                ) : (
+                  account.id
+                )}
               </div>
               <div className="text-xs text-muted-foreground opacity-60">IFSC: {account.ifsc}</div>
             </CardContent>

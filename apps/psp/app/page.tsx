@@ -232,12 +232,16 @@ export default function PspHome() {
           <div className="relative z-10">
             <div className="flex items-center justify-between">
               <div className="text-sm font-medium opacity-80">Total Balance</div>
-              <div className="rounded-full bg-white/10 p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="rounded-full bg-white/10 p-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
                 {isBalanceHidden ? <Eye size={14} /> : <EyeOff size={14} />}
               </div>
             </div>
-            <div className={`mt-1 text-5xl font-black tracking-tighter tabular-nums transition-all duration-500 ${isBalanceHidden ? 'blur-xl opacity-20 scale-95' : 'blur-0 opacity-100 scale-100'}`}>
-              ₹{parseFloat(balanceData?.balance || '0').toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+            <div className="mt-1 text-5xl font-black tracking-tighter tabular-nums transition-all duration-500">
+              {isBalanceHidden ? (
+                <span className="opacity-20 tracking-[0.3em] text-4xl">••••••</span>
+              ) : (
+                `₹${parseFloat(balanceData?.balance || '0').toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+              )}
             </div>
             <div className="mt-6 flex items-center space-x-2 text-sm">
               <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20">
