@@ -22,9 +22,10 @@ export function useAuth() {
 
   const logoutMutation = useMutation({
     mutationFn: () => apiFetch('/auth/logout', { method: 'POST' }),
-    onSuccess: () => {
+    onSettled: () => {
       localStorage.removeItem('nexus_access_token');
       queryClient.setQueryData(['me'], null);
+      queryClient.clear();
     },
   });
 
