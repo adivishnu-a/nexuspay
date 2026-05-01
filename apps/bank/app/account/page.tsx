@@ -336,5 +336,6 @@ export default function AccountPage() {
         </Card>
       </div>
     </div>
+  </div>
   );
 }
