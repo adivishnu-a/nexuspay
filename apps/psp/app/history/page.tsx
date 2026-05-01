@@ -16,6 +16,7 @@ interface Transaction {
   status: 'SUCCESS' | 'FAILED' | 'PENDING';
   counterpartyVpa: string;
   counterpartyName: string;
+  txnReference: string;
   createdAt: string;
 }
 
@@ -71,6 +72,7 @@ export default function HistoryPage() {
               <div>
                 <div className="font-bold">{txn.counterpartyName || txn.counterpartyVpa}</div>
                 <div className="text-[10px] text-muted-foreground">{txn.counterpartyVpa}</div>
+                <div className="text-[10px] font-mono text-muted-foreground/60 mt-0.5">{txn.txnReference}</div>
                 <div className="text-[10px] text-muted-foreground mt-1">{new Date(txn.createdAt).toLocaleString()}</div>
               </div>
             </div>

@@ -215,7 +215,7 @@ export default function PayPage() {
         <Card className="mt-12 w-full border-none bg-secondary/30 p-4 rounded-3xl">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>Reference ID</span>
-            <span className="font-mono">{txnRef.toUpperCase()}</span>
+            <span className="font-mono">{txnRef}</span>
           </div>
         </Card>
 
