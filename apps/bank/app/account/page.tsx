@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Wallet, Plus, ArrowUpRight, ArrowDownLeft, Lock, RefreshCw, LogOut, Eye, EyeOff } from 'lucide-react';
+import { Plus, ArrowUpRight, ArrowDownLeft, Lock, RefreshCw, LogOut, Eye, EyeOff } from 'lucide-react';
 
 interface BankAccount {
   id: string;
@@ -225,11 +225,11 @@ export default function AccountPage() {
             </CardHeader>
             <CardContent className="space-y-3 p-8 pt-0">
               <Dialog>
-                <DialogTrigger asChild>
+                <DialogTrigger render={
                   <Button variant="outline" size="sm" className="w-full rounded-xl text-xs border-border/50 hover:bg-secondary/50">
                     Reset Transaction PIN
                   </Button>
-                </DialogTrigger>
+                } />
                 <DialogContent className="sm:max-w-[425px] rounded-[2rem] border-none bg-background/90 backdrop-blur-2xl">
                   <DialogHeader>
                     <DialogTitle>Set Transaction PIN</DialogTitle>
