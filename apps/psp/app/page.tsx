@@ -14,9 +14,6 @@ import {
   Send, 
   History, 
   User as UserIcon,
-  ShieldCheck,
-  Zap,
-  ShieldAlert,
   ChevronRight,
   LogOut
 } from 'lucide-react';
